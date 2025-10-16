@@ -1,9 +1,11 @@
 ﻿using CashApp.domen;
 using CashApp.domen.Account;
-namespace CashApp.Interface;    
+namespace CashApp.Interface;
+using System.Threading.Tasks;
 public interface IAccountServices
 {
-    IBankAccount CreateAccount(string name, AccountType accountType, string currency, decimal initialBalance);
+    Task <IBankAccount> CreateAccount(string name, AccountType accountType, string currency, decimal initialBalance);
 
-    List<IBankAccount> GetAccounts();
+    Task<List<IBankAccount>> GetAccounts();
+   
 }

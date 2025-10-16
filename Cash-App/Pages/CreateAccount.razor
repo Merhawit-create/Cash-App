@@ -5,7 +5,8 @@
 @using CashApp.domen.Account
 @using CashApp.services
 @using System.ComponentModel.DataAnnotations
-        @inject IAccountServices AccountServices
+@inject IAccountServices AccountServices
+
 <EditForm Model="_model" OnValidSubmit="CreateAccountAsync">
     <h3>Create Account</h3>
 
@@ -74,6 +75,38 @@ else
 
 
 @code {
+    private createAccountModel _model = new();
+    private List<IBankAccount>? accounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await AccountServices.GetAccounts();
+    }
+
+    private async Task CreateAccountAsync(){ 
+        try
+          {
+            AccountServices.CreateAccount(_model.Name!, _model.AccountType, _model.Currency!, _model.InitialBalance);
+            accounts = await AccountServices.GetAccounts();
+            _model.Clear();
+			StateHasChanged();
+           }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
     public class createAccountModel
     {
         [Required(ErrorMessage = "Name is required.")]
@@ -99,42 +132,6 @@ else
 
 
 
-
-
-   /*  private List<IBankAccount> accounts;
-    private createAccountModel _model = new();
+    
+} 
    
-    private void CreateAccountAsync()
-    {  
-        Accountservices.CreateAccount(
-            _model.Name,
-            _model.ACcountType,
-            _model.Currency,
-            _model.InitialBalance
-        )
-     }*/
-
-
-    private createAccountModel _model = new();
-    private IEnumerable<IBankAccount>? accounts;
-
-    private Task CreateAccountAsync()
-    {
-        if (string.IsNullOrWhiteSpace(_model.Name))
-        {
-            Console.WriteLine("Name is required.");
-            return Task.CompletedTask;
-        }
-
-       
-        AccountServices.CreateAccount(_model.Name,_model.AccountType, _model.Currency!, _model.InitialBalance);
-
-        
-        accounts = AccountServices.GetAccounts();
-
-        
-        _model = new();
-
-        return Task.CompletedTask;
-    }
-}

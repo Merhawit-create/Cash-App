@@ -16,6 +16,7 @@ namespace CashApp
 
 
             builder.Services.AddScoped<IAccountServices, Accountservices>();
+             builder.Services.AddScoped<IStorageService, StorageServicecs>(); //StorageServicecs
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 

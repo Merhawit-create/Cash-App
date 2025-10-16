@@ -4,6 +4,9 @@
 using CashApp.domen;
 using CashApp.domen;
 using CashApp.domen.Account;
+using CashApp.Interface;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 
 namespace CashApp.services
@@ -26,18 +29,63 @@ namespace CashApp.services
 
     public class Accountservices : IAccountServices
     {
+        private const string StorageKey = "bankapp_accounts";
+        //private readonly List<IBankAccount> _accounts= new ();
+        private readonly List<Bankacount> _accounts = new();
+        private readonly IStorageService _storageService;
+        private bool isLoaded;
 
-        private readonly List<IBankAccount> _accounts= new List<IBankAccount>();
-        public IBankAccount CreateAccount(string name, AccountType accountType, string currency, decimal initialBalance)
+
+
+        public Accountservices(IStorageService storageService) => _storageService = storageService;
+        
+
+        private async Task IsInitialized()
         {
+
+            if (isLoaded)
+            {
+                return;
+
+            }
+            var fromStorage = await _storageService.GetItemAsync<List<Bankacount>>(StorageKey);
+            _accounts.Clear();
+            if (fromStorage is { Count: > 0 }) 
+                _accounts.AddRange(fromStorage);
+                isLoaded = true;
+            
+        }
+            
+
+        private  Task saveAsync()=> _storageService.SetItemAsync(StorageKey, _accounts);
+
+
+
+
+
+
+
+
+
+        public async Task<IBankAccount> CreateAccount(string name, AccountType accountType, string currency, decimal initialBalance)
+        {    
+            await IsInitialized();
+
             var account = new Bankacount(name, accountType, currency, initialBalance);
             _accounts.Add(account);
+
+            await saveAsync();
             return account;
         }
 
-        public List<IBankAccount> GetAccounts()
-        {
-           return new List<IBankAccount>(_accounts);
+        public async Task<List<IBankAccount>> GetAccounts()
+        { 
+            await IsInitialized();
+           // return _accounts.ToList();
+            //  return _accounts<IBankAccount>().ToList();
+            //return new List<IBankAccount>(_accounts);
+            return _accounts.Cast<IBankAccount>().ToList();
         }
+
     }
 }

@@ -4,6 +4,7 @@ namespace CashApp.domen;
 using CashApp.domen.Account;
 using System.Data;
 using System.Security.Principal;
+using System.Text.Json.Serialization;
 
 public class Bankacount : IBankAccount
 {
@@ -32,6 +33,20 @@ public class Bankacount : IBankAccount
     }
 
 
+    [JsonConstructor]
+    public Bankacount(Guid id, string name, AccountType accountType, string currency, decimal balance, DateTime lastUpdated)
+    {
+        Id = id;
+        Name = name;
+        AccountType = accountType;
+        Currency = currency;
+        Balance = balance;
+        LastUpdated = lastUpdated;
+    }
+    
+    
+   
+   
     public void Deposit(decimal amount)
     {
         throw new NotImplementedException();
