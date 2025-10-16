@@ -47,14 +47,24 @@ public class Bankacount : IBankAccount
     
    
    
-    public void Deposit(decimal amount)
-    {
-        throw new NotImplementedException();
+    public void Deposit(decimal amount) { 
+    if (amount <= 0)
+        throw new ArgumentException("Deposit amount must be positive.");
+
+    Balance += amount;
+    LastUpdated = DateTime.Now;
     }
 
     public void Withdraw(decimal amount)
     {
-        throw new NotImplementedException();
+        if (amount <= 0)
+            throw new ArgumentException("Withdraw amount must be positive.");
+
+        if (amount > Balance)
+            throw new InvalidOperationException("Insufficient balance.");
+
+        Balance -= amount;
+        LastUpdated = DateTime.Now;
     }
 }
 

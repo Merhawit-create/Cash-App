@@ -36,6 +36,21 @@
         <InputNumber @bind-Value="_model.InitialBalance" />
     </div>
 
+
+
+    <div>
+        <label>Deposit money</label>
+        <InputNumber @bind-Value="_model.DepositAmount" />
+    </div>
+
+    <div>
+        <label>Withdraw money</label>
+        <InputNumber @bind-Value="_model.WithdrawAmount" />
+    </div>
+
+
+    
+
     <button type="submit">Create</button>
 </EditForm>
 
@@ -86,11 +101,33 @@ else
     private async Task CreateAccountAsync(){ 
         try
           {
-            AccountServices.CreateAccount(_model.Name!, _model.AccountType, _model.Currency!, _model.InitialBalance);
+            //AccountServices.CreateAccount(_model.Name!, _model.AccountType, _model.Currency!, _model.InitialBalance);
+            var account = await AccountServices.CreateAccount(
+           _model.Name!,
+           _model.AccountType,
+           _model.Currency!,
+           _model.InitialBalance
+       );
+
+            
+            // Deposit
+            if (_model.DepositAmount > 0)
+            {
+                account.Deposit(_model.DepositAmount);
+            }
+
+            // Withdraw
+            if (_model.WithdrawAmount > 0)
+            {
+                account.Withdraw(_model.WithdrawAmount);
+            }
             accounts = await AccountServices.GetAccounts();
             _model.Clear();
 			StateHasChanged();
            }
+
+
+
         catch (Exception exception)
         {
             Console.WriteLine(exception);
@@ -120,12 +157,24 @@ else
         [Range(0, double.MaxValue, ErrorMessage = "Balance cannot be negative.")]
         public decimal InitialBalance { get; set; } = 0;
 
+
+
+
+        [Range(0, double.MaxValue)]
+        public decimal DepositAmount { get; set; } = 0;
+
+        [Range(0, double.MaxValue)]
+        public decimal WithdrawAmount { get; set; } = 0;
+
+
         public void Clear()
         {
             Name = string.Empty;
             AccountType = AccountType.Deposit;
             Currency = string.Empty;
             InitialBalance = 0;
+            DepositAmount = 0;
+            WithdrawAmount = 0;
         }
 
     }
