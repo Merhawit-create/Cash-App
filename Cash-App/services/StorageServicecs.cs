@@ -32,6 +32,9 @@ namespace CashApp.services
         {
            var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
             //  if (json is null)
+            if (string.IsNullOrWhiteSpace(json))
+                return default;
+
 
             return JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions)!; 
         }
