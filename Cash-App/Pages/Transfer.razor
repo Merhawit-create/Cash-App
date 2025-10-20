@@ -1,5 +1,4 @@
-﻿
-@page "/transfer"
+﻿@page "/transfer"
 @using CashApp.services
 @inject IAccountServices Accountservices
 <h3>Transfer</h3>
@@ -12,8 +11,8 @@ else
 {
 
 	<EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
-		<DataAnnotationsValidator/>
-		<ValidationSummary/>
+		<DataAnnotationsValidator />
+		<ValidationSummary />
 
 
 
@@ -34,25 +33,24 @@ else
 		<div class="mb-2">
 			<label>Från konto:</label>
 			<InputSelect TValue="Guid"
-				@bind-Value= "_model.FromAccountId "
-				class="form-select"
-				@onchange="HandleFormChanged">
-<option value="@Guid.Empty"> Välj Konto..</option>
+						 @bind-Value="_model.FromAccountId "
+						 class="form-select"
+						 @onchange="HandleFormChanged">
+				<option value="@Guid.Empty"> Välj Konto..</option>
 				@foreach (var account in _accounts)
 				{
 					<option value="@account.Id"> @account.Name - Saldo: @account.Balance</option>
 				}
-				</InputSelect>
+			</InputSelect>
 		</div>
 
 
 
 		<div class="mb-2">
 			<label>Till konto:</label>
-			<InputSelect 
-				@bind-Value="_model.ToAccountId"
+			<InputSelect @bind-Value="_model.ToAccountId"
 						 class="form-select"
->
+						@onchange="HandleFormChanged">
 				<option value="@Guid.Empty"> Välj Konto..</option>
 				@foreach (var account in _toAccounts)
 				{
@@ -69,18 +67,17 @@ else
 			<InputNumber TValue="decimal"
 						 @bind-Value="_model.Amount"
 						 class="form-control">
-					 
-					 
+
+
 			</InputNumber>
-						
-			
+
+
 		</div>
 
 		<div class="mb-2">
 			<label>Notering</label>
-			<InputTextArea 
-							@bind-Value="_model.note"
-							class="form-control">
+			<InputTextArea @bind-Value="_model.note"
+						   class="form-control">
 
 
 			</InputTextArea>
@@ -91,23 +88,24 @@ else
 		<button type="submit" class="btn btn-primary"> skicka</button>
 
 	</EditForm>
-	
+
 
 
 	<h4> Koto </h4>
 	<ul>
-		@foreach(var account in _accounts)
+		@foreach (var account in _accounts)
 		{
 			<li> @account.Name - Saldo: @account.Balance </li>
-	}</ul>
-	
+		}
+	</ul>
+
 
 }
 
-@code{
-	private  readonly   TransferFormModel _model = new();
-	private   List<IBankAccount> _accounts = new();
-	private   List<IBankAccount> _toAccounts = new();
+@code {
+	private readonly TransferFormModel _model = new();
+	private List<IBankAccount> _accounts = new();
+	private List<IBankAccount> _toAccounts = new();
 
 
 	private class TransferFormModel
@@ -115,49 +113,32 @@ else
 
 
 		public string Type { get; set; } = "Insätning";
-		public Guid FromAccountId{ get; set; }
+		public Guid FromAccountId { get; set; }
 		public Guid ToAccountId { get; set; }
-		public decimal Amount{ get; set; }
+		public decimal Amount { get; set; }
 		public string note { get; set; }
 	}
-
-
-
-
-
-
 
 	protected override async Task OnInitializedAsync()
 	{
 		_accounts = await Accountservices.GetAccounts();
 		_toAccounts = _accounts;
 	}
-	   
-
-	
-
 
 	private async Task OnSubmitAsync()
 	{
-
-
-		
-
-
-		if(_model.FromAccountId == Guid.Empty || _model.ToAccountId == Guid.Empty)
+		if (_model.FromAccountId == Guid.Empty || _model.ToAccountId == Guid.Empty)
 		{
 			//Visa felmeddelande
 			StateHasChanged();
-			return ;
-		} 
+			return;
+		}
 
-
-
-		if(_model.FromAccountId == _model.ToAccountId)
+		if (_model.FromAccountId == _model.ToAccountId)
 		{
 			//Visa felmeddelande
 			StateHasChanged();
-			return ;
+			return;
 		}
 		try
 		{
@@ -181,21 +162,21 @@ else
 
 
 
-		catch(Exception exception)
+		catch (Exception exception)
 		{
 			Console.WriteLine(exception.Message);
 		}
 		//return Task.CompletedTask;
 	}
 
-	
+
 
 
 
 
 	private void HandleFormChanged(ChangeEventArgs eventArgs)
 	{
-		if(Guid.TryParse(eventArgs.Value?.ToString(), out var id))
+		if (Guid.TryParse(eventArgs.Value?.ToString(), out var id))
 		{
 			OnFormChanged(id);
 

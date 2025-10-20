@@ -12,7 +12,7 @@ public class Bankacount : IBankAccount
 {
     //private object _transactionss;
 
-    public Guid Id { get; private set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
     public decimal Balance  { get; private set; }
 

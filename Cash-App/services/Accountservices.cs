@@ -2,6 +2,7 @@
 
 
 using CashApp.domen;
+using System.Linq;
 using CashApp.domen;
 using CashApp.domen.Account;
 using CashApp.Interface;
@@ -27,7 +28,7 @@ namespace CashApp.services
  }
     */
 
-    public class Accountservices : IAccountServices
+    public class Accountservices : IAccountServices 
     {
         private const string StorageKey = "bankapp_accounts";
         //private readonly List<IBankAccount> _accounts= new ();
@@ -87,6 +88,9 @@ namespace CashApp.services
             return _accounts.Cast<IBankAccount>().ToList();
         }
 
+
+
+
         public void Transfer(Guid fromAccountId, Guid toAccountId, decimal amount)
         {
            var fromAccount = _accounts.OfType<Bankacount>().FirstOrDefault(x =>x.Id == fromAccountId)
@@ -95,5 +99,67 @@ namespace CashApp.services
                  ?? throw new KeyNotFoundException("Account with ID {toAccountId} not found"); 
             fromAccount.TransferTo(toAccount, amount);
         }
+
+
+
+
+
+
+
+        public async Task DepositAsync(Guid accountId, decimal amount, string? description = null)
+        {
+            await IsInitialized();
+
+            if (amount <= 0)
+                throw new ArgumentException("Belopp måste vara positivt.", nameof(amount));
+
+            var acc = _accounts.FirstOrDefault(a => a.Id == accountId)
+                ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
+
+            acc.Deposit(amount);
+            await saveAsync();
+        }
+        public async Task WithdrawAsync(Guid accountId, decimal amount, string? description = null)
+        {
+            await IsInitialized();
+
+            if (amount <= 0)
+                throw new ArgumentException("Belopp måste vara positivt.", nameof(amount));
+
+            var acc = _accounts.FirstOrDefault(a => a.Id == accountId)
+                ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
+
+            acc.Withdraw(amount);
+            await saveAsync();
+        }
+
+
+
+
+
+
+        public async Task TransferAsync(Guid fromAccountId, Guid toAccountId, decimal amount, string? description = null)
+        {
+            await IsInitialized();
+
+            if (fromAccountId == toAccountId)
+                throw new ArgumentException("Välj två olika konton.");
+
+            if (amount <= 0)
+                throw new ArgumentException("Belopp måste vara positivt.", nameof(amount));
+
+            var fromAccount = _accounts.FirstOrDefault(x => x.Id == fromAccountId)
+                ?? throw new KeyNotFoundException($"Account with ID {fromAccountId} not found");
+
+            var toAccount = _accounts.FirstOrDefault(y => y.Id == toAccountId)
+                ?? throw new KeyNotFoundException($"Account with ID {toAccountId} not found");
+
+            // Utför överföringen med befintliga metoder (validerar även saldo)
+            fromAccount.TransferTo(toAccount, amount);
+
+            await saveAsync();
+        }
+
+
     }
 }
