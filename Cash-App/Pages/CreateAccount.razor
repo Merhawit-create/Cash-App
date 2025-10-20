@@ -38,15 +38,6 @@
 
 
 
-    <div>
-        <label>Deposit money</label>
-        <InputNumber @bind-Value="_model.DepositAmount" />
-    </div>
-
-    <div>
-        <label>Withdraw money</label>
-        <InputNumber @bind-Value="_model.WithdrawAmount" />
-    </div>
 
 
     
@@ -91,7 +82,7 @@ else
 
 @code {
     private createAccountModel _model = new();
-    private List<IBankAccount>? accounts;
+    private List<IBankAccount>? accounts =new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,22 +100,17 @@ else
            _model.InitialBalance
        );
 
-            
-            // Deposit
-            if (_model.DepositAmount > 0)
-            {
-                account.Deposit(_model.DepositAmount);
-            }
+          
+           
 
-            // Withdraw
-            if (_model.WithdrawAmount > 0)
-            {
-                account.Withdraw(_model.WithdrawAmount);
-            }
-            accounts = await AccountServices.GetAccounts();
-            _model.Clear();
-			StateHasChanged();
-           }
+
+
+
+
+        accounts = await AccountServices.GetAccounts();
+        _model.Clear();
+        StateHasChanged();
+    }
 
 
 
@@ -160,11 +146,7 @@ else
 
 
 
-        [Range(0, double.MaxValue)]
-        public decimal DepositAmount { get; set; } = 0;
-
-        [Range(0, double.MaxValue)]
-        public decimal WithdrawAmount { get; set; } = 0;
+      
 
 
         public void Clear()
@@ -173,8 +155,7 @@ else
             AccountType = AccountType.Deposit;
             Currency = string.Empty;
             InitialBalance = 0;
-            DepositAmount = 0;
-            WithdrawAmount = 0;
+           
         }
 
     }
@@ -182,5 +163,5 @@ else
 
 
     
-} 
+}
    

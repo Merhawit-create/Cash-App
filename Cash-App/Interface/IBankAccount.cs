@@ -1,4 +1,5 @@
-﻿using CashApp.domen.Account;
+﻿using CashApp.domen;
+using CashApp.domen.Account;
 namespace CashApp.Interface;    
 public interface IBankAccount
 {
@@ -9,7 +10,10 @@ public interface IBankAccount
     public AccountType AccountType { get; }
     string Currency { get; }
     DateTime LastUpdated { get;  }
+
+
     void Withdraw(decimal amount);
     void Deposit(decimal amount);
+    void TransferTo(Bankacount toAccount, decimal amount);
 }
 

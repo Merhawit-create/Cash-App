@@ -1,0 +1,220 @@
+﻿
+@page "/transfer"
+@using CashApp.services
+@inject IAccountServices Accountservices
+<h3>Transfer</h3>
+
+@if (_accounts.Count < 2)
+{
+	<p> Skapa minst 2 konton för att göra en transaktion </p>
+}
+else
+{
+
+	<EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+		<DataAnnotationsValidator/>
+		<ValidationSummary/>
+
+
+
+		<!-- Transaktionstyp -->
+		<div>
+			<label>Typ</label><br />
+			<InputSelect @bind-Value="_model.Type">
+				<option value="Insättning">Insättning</option>
+				<option value="Uttag">Uttag</option>
+				<option value="Överföring">Överföring</option>
+			</InputSelect>
+		</div>
+
+
+
+
+
+		<div class="mb-2">
+			<label>Från konto:</label>
+			<InputSelect TValue="Guid"
+				@bind-Value= "_model.FromAccountId "
+				class="form-select"
+				@onchange="HandleFormChanged">
+<option value="@Guid.Empty"> Välj Konto..</option>
+				@foreach (var account in _accounts)
+				{
+					<option value="@account.Id"> @account.Name - Saldo: @account.Balance</option>
+				}
+				</InputSelect>
+		</div>
+
+
+
+		<div class="mb-2">
+			<label>Till konto:</label>
+			<InputSelect 
+				@bind-Value="_model.ToAccountId"
+						 class="form-select"
+>
+				<option value="@Guid.Empty"> Välj Konto..</option>
+				@foreach (var account in _toAccounts)
+				{
+					<option value="@account.Id"> @account.Name - Saldo: @account.Balance</option>
+				}
+			</InputSelect>
+		</div>
+
+
+
+
+		<div class="mb-2">
+			<label>Belopp</label>
+			<InputNumber TValue="decimal"
+						 @bind-Value="_model.Amount"
+						 class="form-control">
+					 
+					 
+			</InputNumber>
+						
+			
+		</div>
+
+		<div class="mb-2">
+			<label>Notering</label>
+			<InputTextArea 
+							@bind-Value="_model.note"
+							class="form-control">
+
+
+			</InputTextArea>
+		</div>
+
+
+
+		<button type="submit" class="btn btn-primary"> skicka</button>
+
+	</EditForm>
+	
+
+
+	<h4> Koto </h4>
+	<ul>
+		@foreach(var account in _accounts)
+		{
+			<li> @account.Name - Saldo: @account.Balance </li>
+	}</ul>
+	
+
+}
+
+@code{
+	private  readonly   TransferFormModel _model = new();
+	private   List<IBankAccount> _accounts = new();
+	private   List<IBankAccount> _toAccounts = new();
+
+
+	private class TransferFormModel
+	{
+
+
+		public string Type { get; set; } = "Insätning";
+		public Guid FromAccountId{ get; set; }
+		public Guid ToAccountId { get; set; }
+		public decimal Amount{ get; set; }
+		public string note { get; set; }
+	}
+
+
+
+
+
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		_accounts = await Accountservices.GetAccounts();
+		_toAccounts = _accounts;
+	}
+	   
+
+	
+
+
+	private async Task OnSubmitAsync()
+	{
+
+
+		
+
+
+		if(_model.FromAccountId == Guid.Empty || _model.ToAccountId == Guid.Empty)
+		{
+			//Visa felmeddelande
+			StateHasChanged();
+			return ;
+		} 
+
+
+
+		if(_model.FromAccountId == _model.ToAccountId)
+		{
+			//Visa felmeddelande
+			StateHasChanged();
+			return ;
+		}
+		try
+		{
+			Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount);
+
+			//Uppdatera vår Lista
+
+			_accounts = await Accountservices.GetAccounts();
+
+			//_accounts = Accountservices.GetAccounts().ToList();
+
+
+			//visa  Nån bekräftelse
+			var from = _accounts.First(x => x.Id == _model.FromAccountId);
+			var to = _accounts.First(X => X.Id == _model.ToAccountId);
+
+			_model.Amount = 0;
+			StateHasChanged();
+
+		}
+
+
+
+		catch(Exception exception)
+		{
+			Console.WriteLine(exception.Message);
+		}
+		//return Task.CompletedTask;
+	}
+
+	
+
+
+
+
+	private void HandleFormChanged(ChangeEventArgs eventArgs)
+	{
+		if(Guid.TryParse(eventArgs.Value?.ToString(), out var id))
+		{
+			OnFormChanged(id);
+
+		}
+
+	}
+
+	private void OnFormChanged(Guid fromId)
+	{
+		_model.FromAccountId = fromId;
+		var from = _accounts.FirstOrDefault(x => x.Id == fromId);
+		if (from != null)
+		{
+			_toAccounts = _accounts.Where(account => account.Id != fromId).ToList();
+		}
+		else
+		{
+			_accounts = _accounts.ToList();
+		}
+		_model.ToAccountId = Guid.Empty;
+	}
+}

@@ -5,10 +5,12 @@ using CashApp.domen.Account;
 using System.Data;
 using System.Security.Principal;
 using System.Text.Json.Serialization;
+using System.Transactions;
+using Transaction = Account.Transaction;
 
 public class Bankacount : IBankAccount
 {
-
+    //private object _transactionss;
 
     public Guid Id { get; private set; }
 
@@ -22,6 +24,8 @@ public class Bankacount : IBankAccount
 
     public DateTime LastUpdated { get; private set; }
 
+   public List<Transaction> _transactions { get; private set; } = new();
+
 
     public Bankacount(string name, AccountType accountType, string currency, decimal initialBalance)
     {
@@ -30,6 +34,16 @@ public class Bankacount : IBankAccount
         Currency = currency;
         Balance = initialBalance;
         LastUpdated = DateTime.Now;
+       /* Transactions = new List<Transaction>
+    {
+        new Transaction
+        {
+            Amount = initialBalance,
+            Description = "Initial Deposit",
+            Type = TransactionType.Deposit,
+            FromAccountId = Id
+        }
+    };*/
     }
 
 
@@ -42,29 +56,48 @@ public class Bankacount : IBankAccount
         Currency = currency;
         Balance = balance;
         LastUpdated = lastUpdated;
+       // Transactions = new List<Transaction>();
+       // Transaction = transactions ?? new List<Transaction>();
     }
     
     
    
    
     public void Deposit(decimal amount) { 
-    if (amount <= 0)
-        throw new ArgumentException("Deposit amount must be positive.");
 
-    Balance += amount;
-    LastUpdated = DateTime.Now;
     }
 
     public void Withdraw(decimal amount)
     {
-        if (amount <= 0)
-            throw new ArgumentException("Withdraw amount must be positive.");
+       
+    }
 
-        if (amount > Balance)
-            throw new InvalidOperationException("Insufficient balance.");
-
+    public void TransferTo(Bankacount toAccount, decimal amount)
+    { 
+        // från vilket konto
         Balance -= amount;
-        LastUpdated = DateTime.Now;
+        LastUpdated = DateTime.UtcNow;
+
+        _transactions.Add(new Transaction
+        {
+            TransactionType = TransactionType.TransferOut,
+            Amount = amount,
+            BalanceAfter = Balance,
+            FromAccountId = Id,
+            ToAccountId = toAccount.Id,
+        });
+
+        // till vilket konto
+        toAccount.Balance += amount;
+        toAccount.LastUpdated = DateTime.UtcNow;
+        toAccount._transactions.Add(new Transaction
+        {
+            TransactionType = TransactionType.TransferIn,
+            Amount = amount,
+            BalanceAfter = Balance,
+            FromAccountId = Id,
+            ToAccountId = toAccount.Id,
+        });
     }
 }
 

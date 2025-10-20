@@ -7,5 +7,6 @@ public interface IAccountServices
     Task <IBankAccount> CreateAccount(string name, AccountType accountType, string currency, decimal initialBalance);
 
     Task<List<IBankAccount>> GetAccounts();
+    void Transfer(Guid fromAccountId, Guid toAccountId, decimal amount);
    
 }
