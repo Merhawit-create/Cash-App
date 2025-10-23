@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 namespace CashApp.domen;
 
 using CashApp.domen.Account;
@@ -100,4 +100,3 @@ public class Bankacount : IBankAccount
         });
     }
 }
-

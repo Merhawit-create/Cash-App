@@ -1,7 +1,152 @@
-﻿<h3>History</h3>
+﻿
+@page "/TransactionHistory"
+@inject IAccountService Accountservice
+<h3>TransactionHistory</h3>
+
+@if (_accounts.Count == 0)
+{
+    <p>Inga konton</p>
+}
+else
+{
+    <div class="mb-2">
+        <label>Välj konto</label>
+        <Inputselect TValue="Guid"
+                     class="form-select"
+                     id="accountSelect"
+                     @bind-Value="SelectedAccountId">
+            @foreach (var account in _accounts)
+            {
+                <option value="@account.Id">@account.Name - Saldo: @account.Balance</option>
+            }
+        </Inputselect>
+    </div>
+}
+<!-- sortering -->
+<div class="mb-2">
+    <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Date)">
+        Sortera: Datum @(currentKey==SortKey.Date ? (descending ? "upp" : "ned") : "")
+    </button>
+    <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Date)">
+        Sortera: Belopp @(currentKey==SortKey.Amount ? (descending ? "upp" : "ned") : "")
+    </button>
+</div>
+
+@if (!_selectedAccount.Transaction.Any())
+{
+    <p>Inga Transaktioner ännu.</p>
+}
+else
+{
+    <table class="table table-sm">
+        <thead>
+        <tr>
+            <th>Datum</th>
+            <th>Belopp</th>
+            <th>Transaktionstyp</th>
+            <th>Saldo efter</th>
+            <th>Från - Till</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var transcaction in sortedTransaction())
+        {<tr> 
+            <td>@transcaction.TimeStamp.ToLocalTime().Tostring($"yyyy MM dd")</td>
+            <td>@transcaction.Amount</td>
+            <td>@transcaction.TransactionType</td>
+            <td>@transcaction.BalanceAfter</td>
+        <td>
+            
+        </tr>
+            @if (@transcaction.FromAccountId.HasValue || transcaction.ToAccountId.hasvalue)
+            {
+                span > @(transaction.FormAccountId.Tostring(){
+                    ..6
+                }) -> @(transaction.ToAccountId.Tostring()) </span >
+
+                   
+            }
+
+
+
+
+
+
+            )
+        </td>
+        }
+        </tbody>
+    </table>
+}
+
 
 @code {
+    private List<IBankAccount> _accounts;
+    private IBankAccount? _selectedAccount;
+    private Guid _selectedAccountId;
+    //startvärde för sorteringen
+    private SortKey currentKey = SortKey.Date;
+    private bool descending = true;
+    
+    //sorteringstyper
+    private enum SortKey
+    {
+        Date,
+        Amount
+    }
 
+    private void SetSort(SortKey)
+    {
+        if (currentKey == sortKey)
+        {
+            descending = !descending;
+        }
+        else
+        {
+            currentKey = sortKey;
+            descending = true;
+        }
+    }
+    
+    public Guid SelectedAccountId
+    {
+        get => _selectedAccountId;
+        set
+        {
+            if(_selectedAccountId == value)
+                return;
+            _selectedAccountId = value;
+            _selectedAccount = _accounts.FirstOrDefault(account = > account.Id == value);
+        }
+    }
 
+    protected override void OnInitialized()
+    {
+        _accounts = Accountservice.GetAccounts();
+        //om det finns konto i vår lista välj första för att visa UI
+        if (_accounts.Count > 0)
+        {
+            _selectedAccountId = _accounts[0].Id;
+            _selectedAccount = _accounts[0];
+        }
+    }
 
+    private IEnumerable<Transaction> sortedTransaction()
+    {
+        if (_selectedAccount == null)
+            return Enumerable.Empty<Transaction>();
+        
+        //sortera listan, datum oh belopp
+        var sortedList = _selectedAccount.Transactions.AsEnumerable();
+        sortedList = currentKey switch
+        {
+            SortKey.Amount => (descending
+                ? sortedList.OrderByDescending(t => t.Amount)
+                : sortedList.OrderByDescending(t => t.Amount)),
+            _ => (descending 
+                ? sortedList.OrderByDescending(t => t.TimeStamp) 
+                : sortedList.OrderBy(t => t.TimeStamp))
+        };
+        return sortedList;
+    }
 }
