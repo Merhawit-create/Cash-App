@@ -25,9 +25,10 @@ public class Bankacount : IBankAccount
     public DateTime LastUpdated { get; private set; }
 
    public List<Transaction> _transactions { get; private set; } = new();
+   IReadOnlyList<Transaction> IBankAccount.Transactions { get; }
+   public object Transaction { get; set; }
 
-
-    public Bankacount(string name, AccountType accountType, string currency, decimal initialBalance)
+   public Bankacount(string name, AccountType accountType, string currency, decimal initialBalance)
     {
         Name = name;
         AccountType = accountType;
@@ -63,7 +64,8 @@ public class Bankacount : IBankAccount
     
    
    
-    public void Deposit(decimal amount) { 
+    public void Deposit(decimal amount) 
+    { 
 
     }
 

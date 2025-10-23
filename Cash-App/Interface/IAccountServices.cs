@@ -12,4 +12,6 @@ public interface IAccountServices
     Task DepositAsync(Guid accountId, decimal amount, string? description = null);
     Task WithdrawAsync(Guid accountId, decimal amount, string? description = null);
     Task TransferAsync(Guid fromAccountId, Guid toAccountId, decimal amount, string? description = null);
+    //Task<object> GetAccountsAsync()
+    Task<IEnumerable<IBankAccount>> GetAccountsAsync();
 }

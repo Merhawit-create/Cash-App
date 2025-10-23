@@ -1,6 +1,8 @@
 ﻿
 @page "/TransactionHistory"
-@inject IAccountService Accountservice
+@using CashApp.domen.Account
+@using CashApp.services
+@inject IAccountServices Accountservice
 <h3>TransactionHistory</h3>
 
 @if (_accounts.Count == 0)
@@ -11,7 +13,7 @@ else
 {
     <div class="mb-2">
         <label>Välj konto</label>
-        <Inputselect TValue="Guid"
+        <InputSelect TValue="Guid"
                      class="form-select"
                      id="accountSelect"
                      @bind-Value="SelectedAccountId">
@@ -19,22 +21,35 @@ else
             {
                 <option value="@account.Id">@account.Name - Saldo: @account.Balance</option>
             }
-        </Inputselect>
+        </InputSelect>
     </div>
 }
+
+
 <!-- sortering -->
 <div class="mb-2">
     <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Date)">
         Sortera: Datum @(currentKey==SortKey.Date ? (descending ? "upp" : "ned") : "")
     </button>
-    <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Date)">
+    
+    <!--<button class="btn btn-sm" @onclick="() => SetSort(SortKey.Date)">
         Sortera: Belopp @(currentKey==SortKey.Amount ? (descending ? "upp" : "ned") : "")
+    </button> -->
+    
+    <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Amount)"> @* ÄNDRING: knappen ska sortera på Amount (tidigare Date) *@
+        Sortera: Belopp @(currentKey == SortKey.Amount ? (descending ? "upp" : "ned") : "")
     </button>
 </div>
 
-@if (!_selectedAccount.Transaction.Any())
+<!-- MEFETENI NAY MEMHREY U @if (!_selectedAccount.Transactions.Any())
 {
     <p>Inga Transaktioner ännu.</p>
+} -->
+
+
+@if (!(_selectedAccount?.Transactions?.Any() ?? false)) @* ÄNDRING: null-säkert check *@
+{
+    <p>Inga transaktioner ännu.</p> @* ÄNDRING: liten språkrättning *@
 }
 else
 {
@@ -49,31 +64,33 @@ else
         </tr>
         </thead>
         <tbody>
-        @foreach (var transcaction in sortedTransaction())
+        @foreach (var transcaction in SortedTransaction())
         {<tr> 
-            <td>@transcaction.TimeStamp.ToLocalTime().Tostring($"yyyy MM dd")</td>
-            <td>@transcaction.Amount</td>
-            <td>@transcaction.TransactionType</td>
-            <td>@transcaction.BalanceAfter</td>
-        <td>
-            
-        </tr>
-            @if (@transcaction.FromAccountId.HasValue || transcaction.ToAccountId.hasvalue)
+                <td>@transcaction.Date.ToLocalTime().ToString($"yyyy-MM-dd")</td>
+                <td>@transcaction.Amount</td>
+                <td>@transcaction.TransactionType</td>
+                <td>@transcaction.BalanceAfter</td>
+                <td>
+                    
+            @if (transcaction.FromAccountId.HasValue || transcaction.ToAccountId.HasValue)
+               
             {
-                span > @(transaction.FormAccountId.Tostring(){
-                    ..6
-                }) -> @(transaction.ToAccountId.Tostring()) </span >
-
-                   
+                <span>
+                    @(transcaction.FromAccountId?.ToString() ?? "")
+                    @(transcaction.FromAccountId.HasValue && transcaction.ToAccountId.HasValue ? " -> " : "")
+                    @(transcaction.ToAccountId?.ToString() ?? "")
+                </span>
             }
+            </td>
+            </tr>
 
 
 
 
 
 
-            )
-        </td>
+            
+        
         }
         </tbody>
     </table>
@@ -81,6 +98,7 @@ else
 
 
 @code {
+    
     private List<IBankAccount> _accounts;
     private IBankAccount? _selectedAccount;
     private Guid _selectedAccountId;
@@ -95,7 +113,7 @@ else
         Amount
     }
 
-    private void SetSort(SortKey)
+    private void SetSort(SortKey sortKey)
     {
         if (currentKey == sortKey)
         {
@@ -116,22 +134,37 @@ else
             if(_selectedAccountId == value)
                 return;
             _selectedAccountId = value;
-            _selectedAccount = _accounts.FirstOrDefault(account = > account.Id == value);
+            _selectedAccount = _accounts.FirstOrDefault(account => account.Id == value);
         }
     }
-
-    protected override void OnInitialized()
+/*
+    protected override void OnInitializedAsync()
     {
-        _accounts = Accountservice.GetAccounts();
+        _accounts = Accountservices.GetAccounts();
         //om det finns konto i vår lista välj första för att visa UI
         if (_accounts.Count > 0)
         {
             _selectedAccountId = _accounts[0].Id;
             _selectedAccount = _accounts[0];
         }
-    }
+    } */
 
-    private IEnumerable<Transaction> sortedTransaction()
+    protected override async Task OnInitializedAsync()
+    {
+        // ÄNDRING: await + konsekvent tjänstnamn
+        var accounts = await Accountservice.GetAccountsAsync();
+        _accounts = accounts?.ToList() ?? new List<IBankAccount>();
+
+        // om det finns konto i vår lista välj första för att visa UI
+        if (_accounts.Count > 0)
+        {
+            _selectedAccountId = _accounts[0].Id;
+            _selectedAccount = _accounts[0];
+        }
+    }
+    
+
+    private IEnumerable<Transaction> SortedTransaction()
     {
         if (_selectedAccount == null)
             return Enumerable.Empty<Transaction>();
@@ -142,10 +175,10 @@ else
         {
             SortKey.Amount => (descending
                 ? sortedList.OrderByDescending(t => t.Amount)
-                : sortedList.OrderByDescending(t => t.Amount)),
-            _ => (descending 
-                ? sortedList.OrderByDescending(t => t.TimeStamp) 
-                : sortedList.OrderBy(t => t.TimeStamp))
+                : sortedList.OrderByDescending(t => t.Amount)), 
+                 _ => (descending 
+                ? sortedList.OrderByDescending<Transaction, object>(t => t.Date) 
+                : sortedList.OrderBy(t => t.Date))
         };
         return sortedList;
     }

@@ -28,7 +28,7 @@ namespace CashApp.services
  }
     */
 
-    public class Accountservices : IAccountServices 
+    public partial class Accountservices : IAccountServices 
     {
         private const string StorageKey = "bankapp_accounts";
         //private readonly List<IBankAccount> _accounts= new ();
@@ -160,6 +160,9 @@ namespace CashApp.services
             await saveAsync();
         }
 
-
+        public Task<IEnumerable<IBankAccount>> GetAccountsAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

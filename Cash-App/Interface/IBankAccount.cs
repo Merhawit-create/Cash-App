@@ -10,7 +10,7 @@ public interface IBankAccount
     public AccountType AccountType { get; }
     string Currency { get; }
     DateTime LastUpdated { get;  }
-
+    IReadOnlyList<Transaction> Transactions { get; }
 
     void Withdraw(decimal amount);
     void Deposit(decimal amount);
