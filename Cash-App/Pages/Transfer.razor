@@ -33,9 +33,12 @@ else
 		<div class="mb-2">
 			<label>Från konto:</label>
 			<InputSelect TValue="Guid"
-						 @bind-Value="_model.FromAccountId"
-						 class="form-select"
-						 @onchange="HandleFormChanged">
+			             @bind-Value="_model.FromAccountId"
+			             class="form-select"
+			             @onchange="HandleFormChanged"
+			             disabled="@(_model.Type == "Insättning")"> 
+				
+				
 				<option value="@Guid.Empty"> Välj Konto..</option>
 				@foreach (var account in _accounts)
 				{
@@ -50,7 +53,9 @@ else
 			<label>Till konto:</label>
 			<InputSelect @bind-Value="_model.ToAccountId"
 						 class="form-select"
-						@onchange="HandleFormChanged">
+						 @onchange="HandleFormChanged"
+						 disabled="@(_model.Type == "Uttag")">
+
 				<option value="@Guid.Empty"> Välj Konto..</option>
 				@foreach (var account in _toAccounts)
 				{
