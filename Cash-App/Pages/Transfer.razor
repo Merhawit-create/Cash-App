@@ -142,7 +142,9 @@ else
 		}
 		try
 		{
-			Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount);
+			//!!!!!!Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount);
+			await Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount);
+
 
 			//Uppdatera vår Lista
 

@@ -159,8 +159,9 @@ else
     {
         // ÄNDRING: await + konsekvent tjänstnamn
         var accounts = await Accountservices.GetAccounts(); 
-        _accounts = accounts?.ToList() ?? new List<IBankAccount>();  
-        
+      //!!!!!!!!!  _accounts = accounts?.ToList() ?? new List<IBankAccount>();  
+      _accounts = accounts ?? new List<IBankAccount>();
+
         
         
        

@@ -91,14 +91,31 @@ namespace CashApp.services
 
 
 
-        public void Transfer(Guid fromAccountId, Guid toAccountId, decimal amount)
+     /* !!!!!!!!!!!   public void Transfer(Guid fromAccountId, Guid toAccountId, decimal amount)
         {
            var fromAccount = _accounts.OfType<Bankacount>().FirstOrDefault(x =>x.Id == fromAccountId)
             ?? throw new KeyNotFoundException("Account with ID {fromAccountId} not found");
             var  toAccount =_accounts.OfType<Bankacount>().FirstOrDefault(y =>y.Id == toAccountId)
                  ?? throw new KeyNotFoundException("Account with ID {toAccountId} not found"); 
             fromAccount.TransferTo(toAccount, amount);
-        }
+        }*/
+     
+     
+     public async Task Transfer(Guid fromAccountId, Guid toAccountId, decimal amount) // <-- async Task
+     {
+         await IsInitialized();
+
+         var fromAccount = _accounts.FirstOrDefault(x => x.Id == fromAccountId)
+                           ?? throw new KeyNotFoundException($"Account with ID {fromAccountId} not found");
+
+         var toAccount = _accounts.FirstOrDefault(y => y.Id == toAccountId)
+                         ?? throw new KeyNotFoundException($"Account with ID {toAccountId} not found");
+
+         fromAccount.TransferTo(toAccount, amount);
+
+         await saveAsync(); // <-- VIKTIGT: spara transaktionerna
+     }
+
 
 
 
