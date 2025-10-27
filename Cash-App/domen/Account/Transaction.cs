@@ -13,6 +13,7 @@
 
         public string Description { get; set; }
         public TransactionType TransactionType { get; internal set; }
+      
     }
 
 

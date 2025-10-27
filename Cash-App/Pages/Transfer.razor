@@ -33,7 +33,7 @@ else
 		<div class="mb-2">
 			<label>Från konto:</label>
 			<InputSelect TValue="Guid"
-						 @bind-Value="_model.FromAccountId "
+						 @bind-Value="_model.FromAccountId"
 						 class="form-select"
 						 @onchange="HandleFormChanged">
 				<option value="@Guid.Empty"> Välj Konto..</option>

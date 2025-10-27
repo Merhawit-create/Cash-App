@@ -1,14 +1,18 @@
 ﻿
-@page "/TransactionHistory"
+@page "/History"
 @using CashApp.domen.Account
+
 @using CashApp.services
-@inject IAccountServices Accountservice
+@inject IAccountServices Accountservices
 <h3>TransactionHistory</h3>
 
 @if (_accounts.Count == 0)
 {
     <p>Inga konton</p>
-}
+} 
+
+
+
 else
 {
     <div class="mb-2">
@@ -64,9 +68,11 @@ else
         </tr>
         </thead>
         <tbody>
-        @foreach (var transcaction in SortedTransaction())
-        {<tr> 
-                <td>@transcaction.Date.ToLocalTime().ToString($"yyyy-MM-dd")</td>
+        @foreach (var transcaction in SortedTransactions())
+        {<tr>                                    
+             <td>@transcaction.Date.ToLocalTime().ToString($"yyyy-MM-dd")</td>  
+          
+
                 <td>@transcaction.Amount</td>
                 <td>@transcaction.TransactionType</td>
                 <td>@transcaction.BalanceAfter</td>
@@ -99,7 +105,7 @@ else
 
 @code {
     
-    private List<IBankAccount> _accounts;
+    private List<IBankAccount> _accounts = new();
     private IBankAccount? _selectedAccount;
     private Guid _selectedAccountId;
     //startvärde för sorteringen
@@ -137,7 +143,7 @@ else
             _selectedAccount = _accounts.FirstOrDefault(account => account.Id == value);
         }
     }
-/*
+    /*
     protected override void OnInitializedAsync()
     {
         _accounts = Accountservices.GetAccounts();
@@ -147,13 +153,18 @@ else
             _selectedAccountId = _accounts[0].Id;
             _selectedAccount = _accounts[0];
         }
-    } */
+    }  */  
 
     protected override async Task OnInitializedAsync()
     {
         // ÄNDRING: await + konsekvent tjänstnamn
-        var accounts = await Accountservice.GetAccountsAsync();
-        _accounts = accounts?.ToList() ?? new List<IBankAccount>();
+        var accounts = await Accountservices.GetAccounts(); 
+        _accounts = accounts?.ToList() ?? new List<IBankAccount>();  
+        
+        
+        
+       
+    
 
         // om det finns konto i vår lista välj första för att visa UI
         if (_accounts.Count > 0)
@@ -162,9 +173,10 @@ else
             _selectedAccount = _accounts[0];
         }
     }
-    
+   
 
-    private IEnumerable<Transaction> SortedTransaction()
+
+    private IEnumerable<Transaction> SortedTransactions()
     {
         if (_selectedAccount == null)
             return Enumerable.Empty<Transaction>();
@@ -175,7 +187,7 @@ else
         {
             SortKey.Amount => (descending
                 ? sortedList.OrderByDescending(t => t.Amount)
-                : sortedList.OrderByDescending(t => t.Amount)), 
+                : sortedList.OrderBy(t => t.Amount)), 
                  _ => (descending 
                 ? sortedList.OrderByDescending<Transaction, object>(t => t.Date) 
                 : sortedList.OrderBy(t => t.Date))

@@ -24,9 +24,18 @@ public class Bankacount : IBankAccount
 
     public DateTime LastUpdated { get; private set; }
 
-   public List<Transaction> _transactions { get; private set; } = new();
-   IReadOnlyList<Transaction> IBankAccount.Transactions { get; }
-   public object Transaction { get; set; }
+   //public List<Transaction> _transactions { get; private  set; } = new(); 
+   //IReadOnlyList<Transaction>? IBankAccount.Transactions { get; } 
+   // BYT UT de två raderna ovan mot:
+   private readonly List<Transaction> _transactions = new();              // <-- ÄNDRING 1: gör fältet readonly och privat
+   public IReadOnlyList<Transaction> Transactions => _transactions;       // <-- ÄNDRING 2: gör property public och returnera listan
+
+   
+   
+   
+   //private readonly List<Transaction> _transactions = new();
+  //public IReadOnlyList<Transaction> Transactions => _transactions;
+   //public object Transaction { get; set; }
 
    public Bankacount(string name, AccountType accountType, string currency, decimal initialBalance)
     {
@@ -65,13 +74,33 @@ public class Bankacount : IBankAccount
    
    
     public void Deposit(decimal amount) 
-    { 
+    {  Balance += amount;
+        _transactions.Add(new Transaction
+        {
+            Date = DateTime.UtcNow,            // <-- HÄR
+            Amount = amount,
+            BalanceAfter = Balance,
+            FromAccountId = Id,
+            ToAccountId = Id,
+            TransactionType = TransactionType.Deposit,
+            Description = "Insättning"
+        });
 
     }
 
     public void Withdraw(decimal amount)
     {
-       
+        Balance -= amount;
+        _transactions.Add(new Transaction
+        {
+            Date = DateTime.UtcNow,            // <-- HÄR
+            Amount = amount,
+            BalanceAfter = Balance,
+            FromAccountId = Id,
+            ToAccountId = Id,
+            TransactionType = TransactionType.Withdraw,
+            Description = "Uttag"
+        }); 
     }
 
     public void TransferTo(Bankacount toAccount, decimal amount)
@@ -81,12 +110,15 @@ public class Bankacount : IBankAccount
         LastUpdated = DateTime.UtcNow;
 
         _transactions.Add(new Transaction
-        {
+        {    
             TransactionType = TransactionType.TransferOut,
             Amount = amount,
             BalanceAfter = Balance,
+           
             FromAccountId = Id,
             ToAccountId = toAccount.Id,
+            Date = DateTime.UtcNow,              // <-- ÄNDRING: sätt datum här
+            Description = $"Överföring till {toAccount.Name}",
         });
 
         // till vilket konto
@@ -96,9 +128,12 @@ public class Bankacount : IBankAccount
         {
             TransactionType = TransactionType.TransferIn,
             Amount = amount,
-            BalanceAfter = Balance,
+            //BalanceAfter = Balance,  orgi
+            BalanceAfter = toAccount.Balance,  
             FromAccountId = Id,
             ToAccountId = toAccount.Id,
+            Date = DateTime.UtcNow,              // <-- ÄNDRING: sätt datum här
+            Description = $"Överföring från {Name}"
         });
     }
 }
