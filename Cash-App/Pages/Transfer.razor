@@ -19,7 +19,7 @@ else
 		<!-- Transaktionstyp -->
 		<div>
 			<label>Typ</label><br />
-			<InputSelect @bind-Value="_model.Type">
+			<InputSelect @bind-Value="_model.Type"  @onchange="HandleTypeChanged">
 				<option value="Insättning">Insättning</option>
 				<option value="Uttag">Uttag</option>
 				<option value="Överföring">Överföring</option>
@@ -117,7 +117,7 @@ else
 	{
 
 
-		public string Type { get; set; } = "Insätning";
+		public string Type { get; set; } = "Insättning";
 		public Guid FromAccountId { get; set; }
 		public Guid ToAccountId { get; set; }
 		public decimal Amount { get; set; }
@@ -130,54 +130,80 @@ else
 		_toAccounts = _accounts;
 	}
 
+
+
 	private async Task OnSubmitAsync()
 	{
-		if (_model.FromAccountId == Guid.Empty || _model.ToAccountId == Guid.Empty)
-		{
-			//Visa felmeddelande
-			StateHasChanged();
-			return;
-		}
-
-		if (_model.FromAccountId == _model.ToAccountId)
-		{
-			//Visa felmeddelande
-			StateHasChanged();
-			return;
-		}
 		try
 		{
-			//!!!!!!Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount);
-			await Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount);
+			// OBS: Type måste exakt matcha dina <option>-värden: "Insättning", "Uttag", "Överföring"
+			if (_model.Type == "Insättning")
+			{
+				// Validering för insättning: ENDAST ToAccountId krävs
+				if (_model.ToAccountId == Guid.Empty || _model.Amount <= 0)
+					return;
 
+				await Accountservices.DepositAsync(_model.ToAccountId, _model.Amount, _model.note);
+			}
+			else if (_model.Type == "Uttag")
+			{
+				// Validering för uttag: ENDAST FromAccountId krävs
+				if (_model.FromAccountId == Guid.Empty || _model.Amount <= 0)
+					return;
 
-			//Uppdatera vår Lista
+				await Accountservices.WithdrawAsync(_model.FromAccountId, _model.Amount, _model.note);
+			}
+			else // Överföring
+			{
+				// För överföring krävs båda + att de inte är samma + positivt belopp
+				if (_model.FromAccountId == Guid.Empty || _model.ToAccountId == Guid.Empty || _model.Amount <= 0)
+					return;
+				if (_model.FromAccountId == _model.ToAccountId)
+					return;
 
+				await Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount);
+			}
+
+			// Uppdatera listor efter operation (så saldo/namn i UI blir rätt)
 			_accounts = await Accountservices.GetAccounts();
+			_toAccounts = _accounts.Where(a => a.Id != _model.FromAccountId).ToList();
 
-			//_accounts = Accountservices.GetAccounts().ToList();
-
-
-			//visa  Nån bekräftelse
-			var from = _accounts.First(x => x.Id == _model.FromAccountId);
-			var to = _accounts.First(X => X.Id == _model.ToAccountId);
-
+			// Nollställ bara det som är rimligt
 			_model.Amount = 0;
 			StateHasChanged();
-
 		}
-
-
-
 		catch (Exception exception)
 		{
 			Console.WriteLine(exception.Message);
 		}
-		//return Task.CompletedTask;
 	}
 
 
 
+	
+	private void HandleTypeChanged(ChangeEventArgs e)   // ÄNDRING: uppdatera UI när typ byts
+	{
+		var selected = e.Value?.ToString();
+
+		if (selected == "Insättning")
+		{
+			// Från-kontot irrelevant → töm och disable via markup
+			_model.FromAccountId = Guid.Empty;
+			// Till-konton: alla tillåtna
+			_toAccounts = _accounts;
+		}
+		else if (selected == "Uttag")
+		{
+			// Till-kontot irrelevant
+			_model.ToAccountId = Guid.Empty;
+			// toAccounts kan stå kvar (används inte då den är disabled)
+		}
+		else // Överföring
+		{
+			// Se till att toAccounts inte innehåller samma konto som From
+			_toAccounts = _accounts.Where(a => a.Id != _model.FromAccountId).ToList();
+		}
+	}
 
 
 
