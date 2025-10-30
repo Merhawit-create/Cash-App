@@ -1,0 +1,167 @@
+﻿
+
+
+@page "/CreateAccount"
+@using CashApp.domen.Account
+@using CashApp.services
+@using System.ComponentModel.DataAnnotations
+@inject IAccountServices AccountServices
+
+<EditForm Model="_model" OnValidSubmit="CreateAccountAsync">
+    <h3>Create Account</h3>
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Account Name</label>
+        <InputText @bind-Value="_model.Name" />
+    </div>
+
+    <div>
+        <label>Account Type</label>
+        <InputSelect @bind-Value="_model.AccountType" class="form-select">
+            <option value="0">Savings</option>
+            <option value="1">Deposit</option>
+        </InputSelect>
+    </div>
+
+    <div>
+        <label>Currency</label>
+        <InputText @bind-Value="_model.Currency" />
+    </div>
+
+    <div>
+        <label>Balance</label>
+        <InputNumber @bind-Value="_model.InitialBalance" />
+    </div>
+
+
+
+
+
+    
+
+    <button type="submit">Create</button>
+</EditForm>
+
+<hr />
+
+<h4>Accounts</h4>
+
+@if (accounts is null || !accounts.Any())
+{
+    <p>No accounts created yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Currency</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var acc in accounts)
+            {
+                <tr>
+                    <td>@acc.Name</td>
+                    <td>@acc.AccountType</td>
+                    <td>@acc.Currency</td>
+                    <td>@acc.Balance</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    }
+
+
+@code {
+    private createAccountModel _model = new();
+    private List<IBankAccount>? accounts =new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await AccountServices.GetAccounts();
+    }
+
+    private async Task CreateAccountAsync(){ 
+        try
+          {
+            //AccountServices.CreateAccount(_model.Name!, _model.AccountType, _model.Currency!, _model.InitialBalance);
+            var account = await AccountServices.CreateAccount(
+           _model.Name!,
+           _model.AccountType,
+           _model.Currency!,
+           _model.InitialBalance
+       );
+
+          
+           
+
+
+
+
+
+        accounts = await AccountServices.GetAccounts();
+        _model.Clear();
+        StateHasChanged();
+    }
+
+
+
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    public class createAccountModel
+    {
+        [Required(ErrorMessage = "Name is required.")]
+        public string? Name { get; set; }
+
+        public AccountType AccountType { get; set; }
+
+        [Required(ErrorMessage = "Currency is required.")]
+        public string? Currency { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Balance cannot be negative.")]
+        public decimal InitialBalance { get; set; } = 0;
+
+
+
+
+      
+
+
+        public void Clear()
+        {
+            Name = string.Empty;
+            AccountType = AccountType.Deposit;
+            Currency = string.Empty;
+            InitialBalance = 0;
+           
+        }
+
+    }
+
+
+
+    
+}
+   

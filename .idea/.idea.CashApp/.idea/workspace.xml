@@ -9,7 +9,48 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1991595e-e2ca-4e7e-b367-589b4d7be5a8" name="Changes" comment="" />
+    <list default="true" id="1991595e-e2ca-4e7e-b367-589b4d7be5a8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App.slnx/FileContentIndex/e76e4a4b-bb16-4ef0-90fe-51604f7d4c78.vsidx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App.slnx/v18/.wsuo" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App.slnx/v18/DocumentLayout.backup.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App.slnx/v18/DocumentLayout.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App/CopilotIndices/18.0.909.6171/CodeChunks.db" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App/CopilotIndices/18.0.909.6171/SemanticSymbols.db" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App/v18/workspaceFileList.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/VSWorkspaceState.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/slnx.sqlite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/Gobal.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/Interface/IAccountServices.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/Interface/IBankAccount.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/Interface/IStorageService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/Pages/CreateAccount.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/Pages/History.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/Pages/Transfer.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/domen/Account/AccountType.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/domen/Account/AccountTypecs.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/domen/Account/Class.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/domen/Account/Transaction.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/domen/AccountType.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/domen/Bankacount.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/services/Accountservices.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/services/StorageServicecs.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cash-App/services/T.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_Imports.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App.sln" beforeDir="false" afterPath="$PROJECT_DIR$/CashApp.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/App.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/App.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Cash-App.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/CashApp.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Cash-App.csproj.user" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/CashApp.csproj.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Layout/NavMenu.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Layout/NavMenu.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Pages/Counter.razor" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Pages/Weather.razor" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/_Imports.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/_Imports.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/wwwroot/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/wwwroot/index.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,6 +84,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Merging new-branch",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -119,7 +161,8 @@
       <updated>1761204870546</updated>
       <workItem from="1761204873824" duration="5188000" />
       <workItem from="1761212429310" duration="3889000" />
-      <workItem from="1761216671594" duration="45494000" />
+      <workItem from="1761216671594" duration="45932000" />
+      <workItem from="1761750822200" duration="9902000" />
     </task>
     <servers />
   </component>
@@ -146,6 +189,10 @@
           <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
           <option name="timeStamp" value="3" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Cash-App/_Imports.razor</url>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
