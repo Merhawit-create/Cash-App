@@ -65,6 +65,7 @@ else
             <th>Transaktionstyp</th>
             <th>Saldo efter</th>
             <th>Från - Till</th>
+            <th></th> <!-- Delete column -->
         </tr>
         </thead>
         <tbody>
@@ -76,20 +77,27 @@ else
                 <td>@transcaction.Amount</td>
                 <td>@transcaction.TransactionType</td>
                 <td>@transcaction.BalanceAfter</td>
+                
                 <td>
                     
-            @if (transcaction.FromAccountId.HasValue || transcaction.ToAccountId.HasValue)
+                    @if (transcaction.FromAccountId.HasValue || transcaction.ToAccountId.HasValue)
                
-            {
-                <span>
-                    @(transcaction.FromAccountId?.ToString().Substring(0,6) ?? "" ?? "")
+                    {
+                        <span>
+                            @(transcaction.FromAccountId?.ToString().Substring(0,6) ?? "" ?? "")
                     
-                    @(transcaction.FromAccountId.HasValue && transcaction.ToAccountId.HasValue ? " -> " : "")
-                    @(transcaction.ToAccountId?.ToString().Substring(0,6) ?? "" ?? "")
-                </span>
-            }
-            </td>
-            </tr>
+                            @(transcaction.FromAccountId.HasValue && transcaction.ToAccountId.HasValue ? " -> " : "")
+                            @(transcaction.ToAccountId?.ToString().Substring(0,6) ?? "" ?? "")
+                        </span>
+                    }
+                </td>
+                
+                
+                <td>
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="() => DeleteTransactionAsync(transcaction)">Ta bort</button> @* ÄNDRING *@
+                </td>
+        </tr>
 
 
 
@@ -196,4 +204,20 @@ else
         };
         return sortedList;
     }
+    
+    
+    private async Task DeleteTransactionAsync(Transaction transaction)
+    {
+        if (_selectedAccount is null) return;
+
+        await Accountservices.DeleteTransactionAsync(_selectedAccount.Id, transaction.Id);
+
+        // Ladda om konton efter radering
+        _accounts = await Accountservices.GetAccounts();
+        _selectedAccount = _accounts.FirstOrDefault(a => a.Id == _selectedAccountId);
+
+        StateHasChanged(); // Uppdatera UI
+    }
+
+   
 }

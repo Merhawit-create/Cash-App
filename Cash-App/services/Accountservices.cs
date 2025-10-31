@@ -181,5 +181,25 @@ namespace CashApp.services
         {
             throw new NotImplementedException();
         }
+
+        public async Task DeleteTransactionAsync(Guid accountId, Guid transactionId)
+        {
+            await IsInitialized();
+
+            var acc = _accounts.FirstOrDefault(a => a.Id == accountId)
+                      ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
+
+            // acc är Bankacount i din lista (_accounts är List<Bankacount>)
+            if (acc is Bankacount bankAcc)
+            {
+                var removed = bankAcc.RemoveTransaction(transactionId);
+                if (!removed) throw new KeyNotFoundException($"Transaction {transactionId} not found");
+                await saveAsync(); // Viktigt: spara ändringen
+            }
+            else
+            {
+                throw new InvalidOperationException("Unexpected account type.");
+            }
+        }
     }
 }

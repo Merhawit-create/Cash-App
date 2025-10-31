@@ -12,13 +12,9 @@ namespace CashApp.services
                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 Converters = {new JsonStringEnumConverter() }
         };
-
-
-
+       
         public StorageServicecs(IJSRuntime jSRuntime) => _jsRuntime = jSRuntime;
-
-
-
+        
 
         public async Task SetItemAsync <T>(string key, T value)
         {

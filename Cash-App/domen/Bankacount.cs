@@ -142,4 +142,14 @@ public class Bankacount : IBankAccount
             Description = $"Överföring från {Name}"
         });
     }
+    
+    // remover 
+    public bool RemoveTransaction(Guid transactionId)  
+    {
+        var tx = _transactions.FirstOrDefault(t => t.Id == transactionId);
+        if (tx is null) return false;
+        _transactions.Remove(tx);
+        return true;
+    }
+
 }

@@ -10,46 +10,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1991595e-e2ca-4e7e-b367-589b4d7be5a8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App.slnx/FileContentIndex/e76e4a4b-bb16-4ef0-90fe-51604f7d4c78.vsidx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App.slnx/v18/.wsuo" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App.slnx/v18/DocumentLayout.backup.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App.slnx/v18/DocumentLayout.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App/CopilotIndices/18.0.909.6171/CodeChunks.db" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App/CopilotIndices/18.0.909.6171/SemanticSymbols.db" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/Cash-App/v18/workspaceFileList.bin" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/VSWorkspaceState.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/.vs/slnx.sqlite" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/Gobal.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/Interface/IAccountServices.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/Interface/IBankAccount.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/Interface/IStorageService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/Pages/CreateAccount.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/Pages/History.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/Pages/Transfer.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/domen/Account/AccountType.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/domen/Account/AccountTypecs.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/domen/Account/Class.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/domen/Account/Transaction.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/domen/AccountType.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/domen/Bankacount.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/services/Accountservices.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/services/StorageServicecs.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/services/T.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_Imports.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App.sln" beforeDir="false" afterPath="$PROJECT_DIR$/CashApp.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/App.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/App.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/Cash-App.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/CashApp.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/Cash-App.csproj.user" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/CashApp.csproj.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/Layout/NavMenu.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Layout/NavMenu.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/Pages/Counter.razor" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/Pages/Weather.razor" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/_Imports.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/_Imports.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/wwwroot/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/wwwroot/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Interface/IAccountServices.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Interface/IAccountServices.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Pages/History.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Pages/History.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Pages/Transfer.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Pages/Transfer.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/domen/Bankacount.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/domen/Bankacount.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/services/Accountservices.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/services/Accountservices.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/services/StorageServicecs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/services/StorageServicecs.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,23 +44,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.CashApp: http.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Merging new-branch",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.sourceCode.C#",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.CashApp: http.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;new-branch&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.C#&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.CashApp: http">
     <configuration name="CashApp: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Cash-App/CashApp.csproj" />
@@ -163,6 +130,7 @@
       <workItem from="1761212429310" duration="3889000" />
       <workItem from="1761216671594" duration="45932000" />
       <workItem from="1761750822200" duration="9902000" />
+      <workItem from="1761823943507" duration="16982000" />
     </task>
     <servers />
   </component>
@@ -191,7 +159,18 @@
         </breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Cash-App/_Imports.razor</url>
+          <properties isMultiMethodBreakpoint="true">
+            <option name="multiMethodBreakpoint" value="true" />
+          </properties>
           <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Cash-App/Pages/History.razor</url>
+          <line>202</line>
+          <properties isMultiMethodBreakpoint="true">
+            <option name="multiMethodBreakpoint" value="true" />
+          </properties>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
