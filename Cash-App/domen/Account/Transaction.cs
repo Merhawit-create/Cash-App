@@ -1,5 +1,8 @@
 ﻿namespace CashApp.domen.Account
 {
+    /// <summary>
+    /// One record of money movement in or out of an account.
+    /// </summary>
     public class Transaction
     {
 
@@ -16,7 +19,9 @@
       
     }
 
-
+    /// <summary>
+    /// The type of transaction: deposit, withdraw, or transfer.
+    /// </summary>
     public enum TransactionType
     {
         Deposit,

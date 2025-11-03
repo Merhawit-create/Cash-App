@@ -1,13 +1,14 @@
 ﻿
 namespace CashApp.Interface
 {
+    /// <summary>
+    /// Used to save and load data from local storage.
+    /// </summary>
     public interface IStorageService
     {
         //spara
         Task SetItemAsync<T>(string key, T item);
         //hemta
-        // Task<List<IBankAccount>> GetItemAsync<T>(string storageKey);
-
         Task <T> GetItemAsync<T>(string storageKey);
     }
 }

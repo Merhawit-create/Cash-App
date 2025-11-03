@@ -1,5 +1,11 @@
 ﻿
-
+@*
+/// <summary>
+/// Page to create a new bank account and list all existing accounts.
+/// Users can enter name, type, currency, and initial balance.
+/// After creating, the account list refreshes.
+/// </summary>
+*@
 
 @page "/CreateAccount"
 @using CashApp.domen.Account
@@ -12,12 +18,12 @@
 
     <DataAnnotationsValidator />
     <ValidationSummary />
-
+    <!-- This div is for the account name input -->
     <div>
         <label>Account Name</label>
         <InputText @bind-Value="_model.Name" />
     </div>
-
+    <!-- This div is for selecting the account type -->
     <div>
         <label>Account Type</label>
         <InputSelect @bind-Value="_model.AccountType" class="form-select">
@@ -25,12 +31,12 @@
             <option value="1">Deposit</option>
         </InputSelect>
     </div>
-
+    <!-- This div is for the currency input -->
     <div>
         <label>Currency</label>
         <InputText @bind-Value="_model.Currency" />
     </div>
-
+    <!-- This div is for the initial balance input -->
     <div>
         <label>Balance</label>
         <InputNumber @bind-Value="_model.InitialBalance" />
@@ -84,42 +90,34 @@ else
     private createAccountModel _model = new();
     private List<IBankAccount>? accounts =new();
 
+    /// <summary>
+    /// Loads the accounts when the page starts.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         accounts = await AccountServices.GetAccounts();
     }
-
+    /// <summary>
+    /// Creates a new account and refreshes the account list.
+    /// </summary>
     private async Task CreateAccountAsync(){ 
         try
           {
-            //AccountServices.CreateAccount(_model.Name!, _model.AccountType, _model.Currency!, _model.InitialBalance);
             var account = await AccountServices.CreateAccount(
            _model.Name!,
            _model.AccountType,
            _model.Currency!,
            _model.InitialBalance
        );
-
-          
-           
-
-
-
-
-
+       
         accounts = await AccountServices.GetAccounts();
         _model.Clear();
         StateHasChanged();
     }
-
-
-
-        catch (Exception exception)
+    catch (Exception exception)
         {
             Console.WriteLine(exception);
         }
-
-
     }
 
 
@@ -143,25 +141,16 @@ else
         [Range(0, double.MaxValue, ErrorMessage = "Balance cannot be negative.")]
         public decimal InitialBalance { get; set; } = 0;
 
-
-
-
-      
-
-
+        /// <summary>
+        /// Clears the form fields to default values.
+        /// </summary>
         public void Clear()
         {
             Name = string.Empty;
             AccountType = AccountType.Deposit;
             Currency = string.Empty;
-            InitialBalance = 0;
-           
-        }
-
+            InitialBalance = 0; 
+        } 
     }
-
-
-
-    
 }
    

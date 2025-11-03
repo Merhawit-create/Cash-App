@@ -9,36 +9,33 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
+     
+        <!-- Home -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="home" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        
-        
-      
-
-
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="CreateAccount">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> CreateAccount
             </NavLink>
         </div>
-
-
-
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="Transfer">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Transfer
             </NavLink>
         </div>
-        
-        
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="History">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> History
             </NavLink>
         </div>
+        <!-- Logout -->
+        <div class="nav-item px-3"/>
+        <NavLink class="nav-link" href="/">
+            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Logga ut
+        </NavLink>
     </nav>
 </div>
 
