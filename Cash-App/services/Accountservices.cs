@@ -36,29 +36,24 @@ namespace CashApp.services
             _accounts.Clear();
             if (fromStorage is { Count: > 0 }) 
                 _accounts.AddRange(fromStorage);
-                isLoaded = true;
+            isLoaded = true;
         }
-            
         /// <summary>
         /// Save accounts to storage.
         /// </summary>
-        private  Task saveAsync()=> _storageService.SetItemAsync(StorageKey, _accounts);
-
-
-
-
+        public Task SaveAsync()=> _storageService.SetItemAsync(StorageKey, _accounts);
+        
         /// <summary>
         /// Make a new account and save it.
         /// </summary>
-        public async Task<IBankAccount> CreateAccount(string name, AccountType accountType, string currency, decimal initialBalance)
-        {    
+        public async Task<IBankAccount> CreateAccount(string name, AccountType accountType, string currency, decimal initialBalance,decimal? interestRate)
+        { 
             await IsInitialized();
-            var account = new Bankacount(name, accountType, currency, initialBalance);
+            var account = new Bankacount(name, accountType, currency, initialBalance,interestRate);
             _accounts.Add(account);
-            await saveAsync();
+            await SaveAsync();
             return account;
         }
-
         /// <summary>
         /// Get all accounts.
         /// </summary>
@@ -66,26 +61,10 @@ namespace CashApp.services
         { 
             await IsInitialized();
             return _accounts.Cast<IBankAccount>().ToList();
-        }
-
-
-
-
-     /* !!!!!!!!!!!   public void Transfer(Guid fromAccountId, Guid toAccountId, decimal amount)
-        {
-           var fromAccount = _accounts.OfType<Bankacount>().FirstOrDefault(x =>x.Id == fromAccountId)
-            ?? throw new KeyNotFoundException("Account with ID {fromAccountId} not found");
-            var  toAccount =_accounts.OfType<Bankacount>().FirstOrDefault(y =>y.Id == toAccountId)
-                 ?? throw new KeyNotFoundException("Account with ID {toAccountId} not found"); 
-            fromAccount.TransferTo(toAccount, amount);
-        }*/
-     
-     
-     
-     
-     /// <summary>
-     /// Move money from one account to another.
-     /// </summary>
+        } 
+        /// <summary>
+        /// Move money from one account to another.
+        //// </summary>
      public async Task Transfer(Guid fromAccountId, Guid toAccountId, decimal amount) // <-- async Task
      {
          await IsInitialized();
@@ -98,14 +77,11 @@ namespace CashApp.services
 
          fromAccount.TransferTo(toAccount, amount);
 
-         await saveAsync(); // <-- VIKTIGT: spara transaktionerna
-     }
-
-
-
-     /// <summary>
-     /// Add money to an account.
-     /// </summary>
+         await SaveAsync(); 
+     } 
+        /// <summary>
+       /// Add money to an account.
+       /// </summary>
         public async Task DepositAsync(Guid accountId, decimal amount, string? description = null)
         {
             await IsInitialized();
@@ -114,7 +90,7 @@ namespace CashApp.services
             var acc = _accounts.FirstOrDefault(a => a.Id == accountId)
                       ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
             acc.Deposit(amount);
-            await saveAsync();
+            await SaveAsync();
         }
      
         /// <summary>
@@ -128,9 +104,8 @@ namespace CashApp.services
             var acc = _accounts.FirstOrDefault(a => a.Id == accountId)
                       ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
             acc.Withdraw(amount);
-            await saveAsync();
+            await SaveAsync();
         }
-
 
         /// <summary>
         /// Move money from one account to another with a note.
@@ -146,19 +121,11 @@ namespace CashApp.services
                               ?? throw new KeyNotFoundException($"Account with ID {fromAccountId} not found");
             var toAccount = _accounts.FirstOrDefault(y => y.Id == toAccountId)
                             ?? throw new KeyNotFoundException($"Account with ID {toAccountId} not found");
-          
-            
+
             // Move the money from the sender account to the receiver account
             fromAccount.TransferTo(toAccount, amount); 
-            await saveAsync();
+            await SaveAsync();
         }
-
-        // maybe kelgso ye
-        public Task<IEnumerable<IBankAccount>> GetAccountsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Delete a transaction from one account.
         /// </summary>
@@ -173,18 +140,33 @@ namespace CashApp.services
             { 
                 var removed = bankAcc.RemoveTransaction(transactionId);
                 if (!removed) throw new KeyNotFoundException($"Transaction {transactionId} not found");
-                await saveAsync();
+                await SaveAsync();
             }
             else
             { 
                 throw new InvalidOperationException("Unexpected account type.");
             }
         }
-
-       
-        private const string CorrectPin = "1234";
+      // The correct PIN code used for login (for testing or demo purposes)
+        private const string CorrectPin = "12345";
+        
+        /// <summary>
+        /// Checks if the entered PIN matches the correct one and returns true or false.
+        /// </summary>
+        /// <param name="pin"></param>
+        /// <returns></returns>
         public Task<bool> ValidatePinAsync(string pin)
             => Task.FromResult(pin == CorrectPin);
-     
+        /// <summary>
+        /// Applies interest to all accounts in the _accounts list.
+        /// </summary>
+        public void ApplyInterestToAll()
+        {
+            foreach (var account in _accounts)
+            {
+                account.ApplyInterest();
+            }
+        }
+
     }
 }

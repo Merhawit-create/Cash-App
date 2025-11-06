@@ -9,8 +9,8 @@
 
 @using CashApp.services
 @inject IAccountServices Accountservices
-<h3>TransactionHistory</h3>
-
+<h3>Överföringshistorik</h3>
+<!--Displays a message "Inga konton " if no accounts exist, otherwise shows a dropdown list to select an account -->
 @if (_accounts.Count == 0)
 {
     <p>Inga konton</p>
@@ -35,30 +35,22 @@ else
 }
 
 
-<!-- sortering -->
+
 <div class="mb-2">
+    <!-- Button to sort the list by date -->
     <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Date)">
-        Sortera: Datum @(currentKey==SortKey.Date ? (descending ? "upp" : "ned") : "")
+        Sortera: Datum @(currentKey == SortKey.Date ? (descending ? "upp" : "ned") : "")
     </button>
-    
-    <!--<button class="btn btn-sm" @onclick="() => SetSort(SortKey.Date)">
-        Sortera: Belopp @(currentKey==SortKey.Amount ? (descending ? "upp" : "ned") : "")
-    </button> -->
-    
-    <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Amount)"> @* ÄNDRING: knappen ska sortera på Amount (tidigare Date) *@
+    <!-- Button to sort the list by amount -->
+    <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Amount)">
         Sortera: Belopp @(currentKey == SortKey.Amount ? (descending ? "upp" : "ned") : "")
     </button>
 </div>
 
-<!-- MEFETENI NAY MEMHREY U @if (!_selectedAccount.Transactions.Any())
+<!--Displays a table of all transactions for the selected account, or a message if there are none  -->
+@if (!(_selectedAccount?.Transactions?.Any() ?? false)) 
 {
-    <p>Inga Transaktioner ännu.</p>
-} -->
-
-
-@if (!(_selectedAccount?.Transactions?.Any() ?? false)) @* ÄNDRING: null-säkert check *@
-{
-    <p>Inga transaktioner ännu.</p> @* ÄNDRING: liten språkrättning *@
+    <p>Inga transaktioner ännu.</p> 
 }
 else
 {
@@ -118,7 +110,9 @@ else
 
 
 @code {
-    
+    /// <summary>
+    /// Stores the list of accounts, the currently selected account and its ID, and the current sorting settings (key and order).
+    /// </summary>
     private List<IBankAccount> _accounts = new();
     private IBankAccount? _selectedAccount;
     private Guid _selectedAccountId;

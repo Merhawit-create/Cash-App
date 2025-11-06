@@ -1,11 +1,15 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿<!-- Top bar with the app name and menu button -->
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
+        <!-- App name (brand) -->
         <a class="navbar-brand" href="">Cash-App</a>
+        <!-- Button to open or close the side menu (for small screens) -->
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
 </div>
+
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
@@ -13,22 +17,25 @@
         <!-- Home -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="home" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Hem
             </NavLink>
         </div>
+        <!-- Create Account page link -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="CreateAccount">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> CreateAccount
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Skapa konto
             </NavLink>
         </div>
+        <!-- Transfer page link -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="Transfer">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Transfer
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Överföring
             </NavLink>
         </div>
+        <!-- Transfer History page link -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="History">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> History
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span>Överföringshistorik
             </NavLink>
         </div>
         <!-- Logout -->
@@ -41,9 +48,11 @@
 
 @code {
     private bool collapseNavMenu = true;
-
+    // Add "collapse" class when menu should be hidden
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
+/// <summary>
+/// Change menu open/close state when user clicks button or menu area
+/// </summary>
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;

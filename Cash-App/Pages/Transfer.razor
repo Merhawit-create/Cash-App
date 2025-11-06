@@ -7,7 +7,7 @@
 @page "/transfer"
 @using CashApp.services
 @inject IAccountServices Accountservices
-<h3>Transfer</h3>
+<h3>Överföring</h3>
 
 @if (_accounts.Count < 2)
 {
@@ -102,17 +102,7 @@ else
 	</EditForm>
 
 
-	<!-- This div shows a simple list of accounts and their balances -->
-	<div>
-		<h4> Koto </h4>
-		<ul>
-			@foreach (var account in _accounts)
-			{
-				<li> @account.Name - Saldo: @account.Balance </li>
-			}
-		</ul>
-	</div>
-
+	
 }
 
 @code {
@@ -122,7 +112,9 @@ else
 	private string _alert;
 	private string _alertCss = "alert-info";
 
-	// Holds the user's input for a transfer (type, accounts, amount, and note)
+	/// <summary>
+	///  Holds the user's input for a transfer (type, accounts, amount, and note)
+	/// </summary>
 	private class TransferFormModel
 	{
 		public string Type { get; set; } = "Insättning";
@@ -130,6 +122,7 @@ else
 		public Guid ToAccountId { get; set; }
 		public decimal? Amount { get; set; }
 		public string note { get; set; }
+		public decimal? Balance { get; set; }
 	}
 	/// <summary>
 	/// Loads all accounts and prepares dropdown lists.
@@ -154,28 +147,30 @@ else
 	{
 		try
 		{
-			
+
 			_alert = null;
 			if (_model.Type == "Insättning")
-			{ 
+			{
 				if (_model.ToAccountId == Guid.Empty)
-				{ 
+				{
 					_alert = "Välj ett 'Till konto' för insättning.";
 					_alertCss = "alert-warning";
 					return;
 				}
+
 				if (_model.Amount <= 0)
 				{
 					_alert = "Belopp måste vara större än 0.";
 					_alertCss = "alert-warning";
 					return;
 				}
+
 				await Accountservices.DepositAsync(_model.ToAccountId, _model.Amount.Value, _model.note);
-				
+
 				_alert = "Insättning genomförd.";
 				_alertCss = "alert-success";
 			}
-			else if (_model.Type == "Uttag")  // Withdraw
+			else if (_model.Type == "Uttag") // Withdraw
 			{
 				if (_model.FromAccountId == Guid.Empty)
 				{
@@ -183,9 +178,26 @@ else
 					_alertCss = "alert-warning";
 					return;
 				}
-				if ( _model.Amount is null || _model.Amount <= 0)
+
+				if (_model.Amount is null || _model.Amount <= 0 )
 				{
 					_alert = "Belopp måste vara större än 0.";
+					_alertCss = "alert-warning";
+					return;
+				}
+				var fromAccount = _accounts.FirstOrDefault(a => a.Id == _model.FromAccountId);
+
+				if (fromAccount is null)
+				{
+					_alert = "Konto hittades inte.";
+					_alertCss = "alert-danger";
+					return;
+				}
+
+				
+				if (_model.Amount > fromAccount.Balance)
+				{
+					_alert = "Du kan inte ta ut mer än saldot på kontot.";
 					_alertCss = "alert-warning";
 					return;
 				}
@@ -195,46 +207,54 @@ else
 				_alertCss = "alert-success";
 			}
 			else // Överföring (Transfer)
-			{
-				if (_model.FromAccountId == Guid.Empty || _model.ToAccountId == Guid.Empty)
 				{
-					_alert = "Välj både 'Från konto' och 'Till konto' för överföring.";
-					_alertCss = "alert-warning";
-					return;
-				}
-				if (_model.FromAccountId == _model.ToAccountId)
-				{
-					_alert = "Du kan inte överföra till samma konto .";
-					_alertCss = "alert-danger";
-					return;
-				}
-				if (_model.Amount is null || _model.Amount <= 0)
-				{
-					_alert = "Belopp måste vara större än 0.";
-					_alertCss = "alert-warning";
-					return;
-				}
+					if (_model.FromAccountId == Guid.Empty || _model.ToAccountId == Guid.Empty)
+					{
+						_alert = "Välj både 'Från konto' och 'Till konto' för överföring.";
+						_alertCss = "alert-warning";
+						return;
+					}
 
-				await Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount.Value);
-				_alert = "Överföring genomförd.";
-				_alertCss = "alert-success";
-				
+					if (_model.FromAccountId == _model.ToAccountId)
+					{
+						_alert = "Du kan inte överföra till samma konto .";
+						_alertCss = "alert-danger";
+						return;
+					}
+
+					if (_model.Amount is null || _model.Amount <= 0)
+					{
+						_alert = "Belopp måste vara större än 0.";
+						_alertCss = "alert-warning";
+						return;
+					}
+
+					await Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount.Value);
+					_alert = "Överföring genomförd.";
+					_alertCss = "alert-success";
+
+				}
+				// Refresh the account lists so balances in the UI are up to date
+				_accounts = await Accountservices.GetAccounts();
+				_toAccounts = _accounts;
+				// Reset the form fields after a successful operation
+				_model.FromAccountId = Guid.Empty;
+				_model.ToAccountId = Guid.Empty;
+				_model.Amount = null;
+				_model.note = string.Empty;
+				StateHasChanged();
 			}
-			// Refresh the account lists so balances in the UI are up to date
-			_accounts = await Accountservices.GetAccounts();
-			_toAccounts = _accounts;
-            // Reset the form fields after a successful operation
-			_model.FromAccountId = Guid.Empty;
-			_model.ToAccountId   = Guid.Empty;
-			_model.Amount        = null;          
-			_model.note          = string.Empty;
-			StateHasChanged();
-		}
-		catch (Exception exception)
-		{ // Show error message to the user if something goes wrong
-			_alert = $"Ett fel uppstod: {exception.Message}";
-			_alertCss = "alert-danger";
-		}
+			catch
+
+			(Exception exception)
+			{
+				// Show error message to the user if something goes wrong
+				_alert = $"Ett fel uppstod: {exception.Message}";
+				_alertCss = "alert-danger";
+			}
+		
+
+
 	}
 
 

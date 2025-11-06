@@ -10,16 +10,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1991595e-e2ca-4e7e-b367-589b4d7be5a8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Cash-App/Layout/NoNavLayout.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cash-App/Pages/Login.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CashApp/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Gobal.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Gobal.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/Interface/IAccountServices.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Interface/IAccountServices.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/Interface/IBankAccount.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Interface/IBankAccount.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/Interface/IStorageService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Interface/IStorageService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/Layout/NavMenu.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Layout/NavMenu.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Layout/NoNavLayout.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Layout/NoNavLayout.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/Pages/CreateAccount.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Pages/CreateAccount.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/Pages/History.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Pages/History.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/Pages/Home.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Pages/Home.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cash-App/Pages/Login.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Pages/Login.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/Pages/Transfer.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Pages/Transfer.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/domen/Account/AccountType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/domen/Account/AccountType.cs" afterDir="false" />
@@ -27,7 +27,6 @@
       <change beforePath="$PROJECT_DIR$/Cash-App/domen/Bankacount.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/domen/Bankacount.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/services/Accountservices.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/services/Accountservices.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cash-App/services/StorageServicecs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Cash-App/services/StorageServicecs.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cash-App/services/T.cs" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +141,8 @@
       <workItem from="1761212429310" duration="3889000" />
       <workItem from="1761216671594" duration="45932000" />
       <workItem from="1761750822200" duration="9902000" />
-      <workItem from="1761823943507" duration="47356000" />
+      <workItem from="1761823943507" duration="57280000" />
+      <workItem from="1762348708444" duration="44434000" />
     </task>
     <servers />
   </component>
@@ -178,7 +178,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Cash-App/Pages/History.razor</url>
-          <line>202</line>
+          <line>196</line>
           <properties isMultiMethodBreakpoint="true">
             <option name="multiMethodBreakpoint" value="true" />
           </properties>
@@ -186,7 +186,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Cash-App/Pages/CreateAccount.razor</url>
-          <line>154</line>
+          <line>119</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>

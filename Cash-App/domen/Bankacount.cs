@@ -21,7 +21,7 @@ public class Bankacount : IBankAccount
     public AccountType AccountType { get; private set; }
     public string Currency { get; private set; }
     public DateTime LastUpdated { get; private set; }
-
+    public decimal? InterestRate { get; private set; }
     private  List<Transaction> _transactions = new();
    public IReadOnlyList<Transaction> Transactions => _transactions;
    
@@ -34,25 +34,20 @@ public class Bankacount : IBankAccount
        get => _transactions;
        private set => _transactions = value ?? new List<Transaction>();
    }
- 
-   
-   
-   
-  
 
    /// <summary>
    /// Makes a new account with a starting balance and saves a record of the first deposit.
    /// </summary>
 
   
-   public Bankacount(string name, AccountType accountType, string currency, decimal initialBalance)
+   public Bankacount(string name, AccountType accountType, string currency, decimal initialBalance,decimal?  interestRate )
     {
         Name = name;
         AccountType = accountType;
         Currency = currency;
         Balance = initialBalance;
+        InterestRate = interestRate;
         LastUpdated = DateTime.Now;
-      
        _transactions.Add(new Transaction
        {
            Date = DateTime.UtcNow,
@@ -64,15 +59,12 @@ public class Bankacount : IBankAccount
            Description = "Initial insättning"
        });
     }
-
-   
-  
     /// <summary>
     /// JSON constructor used when deserializing an account from storage.
     /// </summary>
 
     [JsonConstructor]
-    public Bankacount(Guid id, string name, AccountType accountType, string currency, decimal balance, DateTime lastUpdated)
+    public Bankacount(Guid id, string name, AccountType accountType, string currency, decimal balance, DateTime lastUpdated,decimal? interestRate)
     {
         Id = id;
         Name = name;
@@ -80,14 +72,16 @@ public class Bankacount : IBankAccount
         Currency = currency;
         Balance = balance;
         LastUpdated = lastUpdated;
+        InterestRate = interestRate;
       
     }
-    
+
     /// <summary>
     /// Deposits a positive amount into this account and records a transaction.
     /// </summary>
     /// <param name="amount">Amount to deposit.</param>
-    public void Deposit(decimal amount) 
+    /// <param name="ränteinsättning"></param>
+    public void Deposit(decimal amount, string ränteinsättning) 
     {  Balance += amount;
         _transactions.Add(new Transaction
         {
@@ -101,9 +95,6 @@ public class Bankacount : IBankAccount
         });
 
     }
-
-    
-   
     /// <summary>
     /// Withdraws an amount from this account and records a transaction.
     /// </summary>
@@ -122,10 +113,14 @@ public class Bankacount : IBankAccount
             Description = "Uttag"
         }); 
     }
-
+    /// <summary>
+    /// Deposits the specified amount into the account by increasing the current balance.
+    /// </summary>
+    public void Deposit(decimal amount)
+    {
+        Balance += amount;
+    }
     
-    
- 
     /// <summary>
     /// Transfers funds from this account to another account and records both sides of the transfer.
     /// </summary>
@@ -163,9 +158,6 @@ public class Bankacount : IBankAccount
             Description = $"Överföring från {Name}"
         });
     }
-    
-     
-  
     /// <summary>
     /// Deletes one transaction from the account’s list of transactions using its ID.
     /// </summary>
@@ -177,5 +169,20 @@ public class Bankacount : IBankAccount
         _transactions.Remove(tx);
         return true;
     }
-
+    
+    /// <summary>
+    /// Applies interest to the account if it is a savings account and has a valid interest rate.
+    /// The calculated interest is added to the balance as a deposit.
+    /// </summary>
+    
+    public void ApplyInterest()
+    {
+        if (AccountType == AccountType.Savings && InterestRate.HasValue && InterestRate > 0)
+        {
+            var interest = Balance * InterestRate.Value;
+            Deposit(interest, "Ränteinsättning");
+        }
+    }
+    
 }
+

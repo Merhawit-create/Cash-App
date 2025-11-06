@@ -8,12 +8,19 @@ namespace CashApp.services
     /// This service uses localStorage to save and load data in the browser.
     /// </summary>
     public class StorageServicecs : IStorageService {
+        /// <summary>
+        /// Provides access to JavaScript runtime and configures JSON serialization options
+        /// used for saving and loading data in the browser.
+        /// </summary>
         private readonly  IJSRuntime _jsRuntime;
         private JsonSerializerOptions _jsonSerializerOptions = new()
         {
                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 Converters = {new JsonStringEnumConverter() }
         }; 
+        /// <summary>
+        /// Constructor that receives an IJSRuntime instance and stores it for JavaScript interop.
+        /// </summary>
         public StorageServicecs(IJSRuntime jSRuntime) => _jsRuntime = jSRuntime;
         
         /// <summary>
@@ -35,6 +42,8 @@ namespace CashApp.services
                 return default;
             return JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions)!; 
         }
+        
+        
 
        
     }

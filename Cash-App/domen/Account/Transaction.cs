@@ -11,10 +11,9 @@
         public decimal Amount { get; set; }
         public decimal BalanceAfter { get; set; }
         public Guid? FromAccountId { get; set; }
-        public Guid? ToAccountId { get; set; } // för
+        public Guid? ToAccountId { get; set; } 
         public TransactionType Type { get; set; }
-
-        public string Description { get; set; }
+        public string Description { get; set; } 
         public TransactionType TransactionType { get; internal set; }
       
     }
