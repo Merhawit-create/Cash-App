@@ -1,7 +1,13 @@
-﻿@page "/transfer"
+﻿@*
+/// <summary>
+/// Page to perform deposits, withdrawals, and transfers between accounts.
+/// The form validates inputs and shows a status alert for the result.
+/// </summary>
+*@
+@page "/transfer"
 @using CashApp.services
 @inject IAccountServices Accountservices
-<h3>Transfer</h3>
+<h3>Överföring</h3>
 
 @if (_accounts.Count < 2)
 {
@@ -9,14 +15,19 @@
 }
 else
 {
-
+	<!-- This form lets the user deposit, withdraw, or transfer money -->
 	<EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
 		<DataAnnotationsValidator />
 		<ValidationSummary />
+		<!-- This div shows the alert message after submit -->
+		<div>@if (!string.IsNullOrWhiteSpace(_alert))
+		{
+			<div class="alert @_alertCss" role="alert">@_alert</div>
+		}
 
+		</div>
 
-
-		<!-- Transaktionstyp -->
+		<!-- This div is for choosing the transaction type -->
 		<div>
 			<label>Typ</label><br />
 			<InputSelect @bind-Value="_model.Type"  @onchange="HandleTypeChanged">
@@ -29,10 +40,10 @@ else
 
 
 
-
+		<!-- This div is for selecting the source account -->
 		<div class="mb-2">
 			<label>Från konto:</label>
-			<InputSelect TValue="Guid"
+			<InputSelect  TValue="Guid"
 			             @bind-Value="_model.FromAccountId"
 			             class="form-select"
 			             @onchange="HandleFormChanged"
@@ -48,12 +59,13 @@ else
 		</div>
 
 
-
+		<!-- This div is for selecting the destination account -->
 		<div class="mb-2">
 			<label>Till konto:</label>
-			<InputSelect @bind-Value="_model.ToAccountId"
+			<InputSelect  TValue="Guid"
+			              @bind-Value="_model.ToAccountId"
 						 class="form-select"
-						 @onchange="HandleFormChanged"
+						 @onchange="HandleToChanged"
 						 disabled="@(_model.Type == "Uttag")">
 
 				<option value="@Guid.Empty"> Välj Konto..</option>
@@ -66,26 +78,21 @@ else
 
 
 
-
+		<!-- This div is for the amount input -->
 		<div class="mb-2">
 			<label>Belopp</label>
-			<InputNumber TValue="decimal"
-						 @bind-Value="_model.Amount"
-						 class="form-control">
-
-
+			<InputNumber TValue="decimal?"
+			             @bind-Value="_model.Amount"
+			             class="form-control">
+				
 			</InputNumber>
-
-
-		</div>
-
+        </div>
+		<!-- This div is for an optional note -->
 		<div class="mb-2">
 			<label>Notering</label>
 			<InputTextArea @bind-Value="_model.note"
 						   class="form-control">
-
-
-			</InputTextArea>
+            </InputTextArea>
 		</div>
 
 
@@ -95,130 +102,212 @@ else
 	</EditForm>
 
 
-
-	<h4> Koto </h4>
-	<ul>
-		@foreach (var account in _accounts)
-		{
-			<li> @account.Name - Saldo: @account.Balance </li>
-		}
-	</ul>
-
-
+	
 }
 
 @code {
 	private readonly TransferFormModel _model = new();
 	private List<IBankAccount> _accounts = new();
 	private List<IBankAccount> _toAccounts = new();
+	private string _alert;
+	private string _alertCss = "alert-info";
 
-
+	/// <summary>
+	///  Holds the user's input for a transfer (type, accounts, amount, and note)
+	/// </summary>
 	private class TransferFormModel
 	{
-
-
 		public string Type { get; set; } = "Insättning";
 		public Guid FromAccountId { get; set; }
 		public Guid ToAccountId { get; set; }
-		public decimal Amount { get; set; }
+		public decimal? Amount { get; set; }
 		public string note { get; set; }
+		public decimal? Balance { get; set; }
 	}
-
+	/// <summary>
+	/// Loads all accounts and prepares dropdown lists.
+	/// </summary>
 	protected override async Task OnInitializedAsync()
 	{
-		_accounts = await Accountservices.GetAccounts();
+		
+		_accounts = await Accountservices.GetAccounts(); 
 		_toAccounts = _accounts;
+		
+		
+		_model.FromAccountId = Guid.Empty;
+		_model.ToAccountId = Guid.Empty;
+	
 	}
-
-
-
+	
+	/// <summary>
+	/// Handles submit for deposit, withdrawal, and transfer with basic checks.
+	/// Shows a success or error message and refreshes accounts.
+	/// </summary>
 	private async Task OnSubmitAsync()
 	{
 		try
 		{
-			// OBS: Type måste exakt matcha dina <option>-värden: "Insättning", "Uttag", "Överföring"
+
+			_alert = null;
 			if (_model.Type == "Insättning")
 			{
-				// Validering för insättning: ENDAST ToAccountId krävs
-				if (_model.ToAccountId == Guid.Empty || _model.Amount <= 0)
+				if (_model.ToAccountId == Guid.Empty)
+				{
+					_alert = "Välj ett 'Till konto' för insättning.";
+					_alertCss = "alert-warning";
 					return;
+				}
 
-				await Accountservices.DepositAsync(_model.ToAccountId, _model.Amount, _model.note);
+				if (_model.Amount <= 0)
+				{
+					_alert = "Belopp måste vara större än 0.";
+					_alertCss = "alert-warning";
+					return;
+				}
+
+				await Accountservices.DepositAsync(_model.ToAccountId, _model.Amount.Value, _model.note);
+
+				_alert = "Insättning genomförd.";
+				_alertCss = "alert-success";
 			}
-			else if (_model.Type == "Uttag")
+			else if (_model.Type == "Uttag") // Withdraw
 			{
-				// Validering för uttag: ENDAST FromAccountId krävs
-				if (_model.FromAccountId == Guid.Empty || _model.Amount <= 0)
+				if (_model.FromAccountId == Guid.Empty)
+				{
+					_alert = "Välj ett 'Från konto' för uttag.";
+					_alertCss = "alert-warning";
 					return;
+				}
 
-				await Accountservices.WithdrawAsync(_model.FromAccountId, _model.Amount, _model.note);
+				if (_model.Amount is null || _model.Amount <= 0 )
+				{
+					_alert = "Belopp måste vara större än 0.";
+					_alertCss = "alert-warning";
+					return;
+				}
+				var fromAccount = _accounts.FirstOrDefault(a => a.Id == _model.FromAccountId);
+
+				if (fromAccount is null)
+				{
+					_alert = "Konto hittades inte.";
+					_alertCss = "alert-danger";
+					return;
+				}
+
+				
+				if (_model.Amount > fromAccount.Balance)
+				{
+					_alert = "Du kan inte ta ut mer än saldot på kontot.";
+					_alertCss = "alert-warning";
+					return;
+				}
+
+				await Accountservices.WithdrawAsync(_model.FromAccountId, _model.Amount.Value, _model.note);
+				_alert = "Uttag genomfört.";
+				_alertCss = "alert-success";
 			}
-			else // Överföring
+			else // Överföring (Transfer)
+				{
+					if (_model.FromAccountId == Guid.Empty || _model.ToAccountId == Guid.Empty)
+					{
+						_alert = "Välj både 'Från konto' och 'Till konto' för överföring.";
+						_alertCss = "alert-warning";
+						return;
+					}
+
+					if (_model.FromAccountId == _model.ToAccountId)
+					{
+						_alert = "Du kan inte överföra till samma konto .";
+						_alertCss = "alert-danger";
+						return;
+					}
+
+					if (_model.Amount is null || _model.Amount <= 0)
+					{
+						_alert = "Belopp måste vara större än 0.";
+						_alertCss = "alert-warning";
+						return;
+					}
+
+					await Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount.Value);
+					_alert = "Överföring genomförd.";
+					_alertCss = "alert-success";
+
+				}
+				// Refresh the account lists so balances in the UI are up to date
+				_accounts = await Accountservices.GetAccounts();
+				_toAccounts = _accounts;
+				// Reset the form fields after a successful operation
+				_model.FromAccountId = Guid.Empty;
+				_model.ToAccountId = Guid.Empty;
+				_model.Amount = null;
+				_model.note = string.Empty;
+				StateHasChanged();
+			}
+			catch
+
+			(Exception exception)
 			{
-				// För överföring krävs båda + att de inte är samma + positivt belopp
-				if (_model.FromAccountId == Guid.Empty || _model.ToAccountId == Guid.Empty || _model.Amount <= 0)
-					return;
-				if (_model.FromAccountId == _model.ToAccountId)
-					return;
-
-				await Accountservices.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount);
+				// Show error message to the user if something goes wrong
+				_alert = $"Ett fel uppstod: {exception.Message}";
+				_alertCss = "alert-danger";
 			}
+		
 
-			// Uppdatera listor efter operation (så saldo/namn i UI blir rätt)
-			_accounts = await Accountservices.GetAccounts();
-			_toAccounts = _accounts.Where(a => a.Id != _model.FromAccountId).ToList();
 
-			// Nollställ bara det som är rimligt
-			_model.Amount = 0;
-			StateHasChanged();
-		}
-		catch (Exception exception)
-		{
-			Console.WriteLine(exception.Message);
-		}
 	}
 
 
 
-	
+	/// <summary>
+	/// Updates enabled fields and destination list when type changes.
+	/// </summary>
 	private void HandleTypeChanged(ChangeEventArgs e)   // ÄNDRING: uppdatera UI när typ byts
 	{
+		_model.Type = e.Value?.ToString() ?? "Överföring";
 		var selected = e.Value?.ToString();
-
 		if (selected == "Insättning")
-		{
-			// Från-kontot irrelevant → töm och disable via markup
+		{  // From account is not used for deposit → clear it
 			_model.FromAccountId = Guid.Empty;
-			// Till-konton: alla tillåtna
+			// All accounts can be used as the To account
 			_toAccounts = _accounts;
 		}
 		else if (selected == "Uttag")
-		{
-			// Till-kontot irrelevant
+		{// To account is not used for withdraw → clear it
 			_model.ToAccountId = Guid.Empty;
-			// toAccounts kan stå kvar (används inte då den är disabled)
+			
 		}
-		else // Överföring
+		else 
 		{
-			// Se till att toAccounts inte innehåller samma konto som From
+			// For transfer, the To list should not include the selected From account
 			_toAccounts = _accounts.Where(a => a.Id != _model.FromAccountId).ToList();
 		}
 	}
 
-
+	/// <summary>
+	/// Parses the selected "From account" value and applies changes.
+	/// </summary>
 
 	private void HandleFormChanged(ChangeEventArgs eventArgs)
 	{
 		if (Guid.TryParse(eventArgs.Value?.ToString(), out var id))
 		{
 			OnFormChanged(id);
-
 		}
-
 	}
-
-	private void OnFormChanged(Guid fromId)
+	/// <summary>
+	/// Stores selected "To account" value.
+	/// </summary>
+	private void HandleToChanged(ChangeEventArgs e)
 	{
+		if (Guid.TryParse(e.Value?.ToString(), out var id))
+			_model.ToAccountId = id; // skriv bara To här
+	}
+	/// <summary>
+	/// Updates model and filters "To accounts" after "From account" changes (for transfers).
+	/// </summary>
+	private void OnFormChanged(Guid fromId)
+	{     if (_model.Type != "Överföring") return; 
 		_model.FromAccountId = fromId;
 		var from = _accounts.FirstOrDefault(x => x.Id == fromId);
 		if (from != null)
@@ -229,6 +318,6 @@ else
 		{
 			_accounts = _accounts.ToList();
 		}
-		_model.ToAccountId = Guid.Empty;
+		_model.ToAccountId = Guid.Empty; 
 	}
 }

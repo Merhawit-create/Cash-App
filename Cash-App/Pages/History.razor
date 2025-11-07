@@ -1,11 +1,16 @@
-﻿
+﻿@*
+/// <summary>
+/// Page to view and sort the transaction history for a selected account.
+/// Users can pick an account, sort by date or amount, and delete a transaction.
+/// </summary>
+*@
 @page "/History"
 @using CashApp.domen.Account
 
 @using CashApp.services
 @inject IAccountServices Accountservices
-<h3>TransactionHistory</h3>
-
+<h3>Överföringshistorik</h3>
+<!--Displays a message "Inga konton " if no accounts exist, otherwise shows a dropdown list to select an account -->
 @if (_accounts.Count == 0)
 {
     <p>Inga konton</p>
@@ -30,30 +35,22 @@ else
 }
 
 
-<!-- sortering -->
+
 <div class="mb-2">
+    <!-- Button to sort the list by date -->
     <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Date)">
-        Sortera: Datum @(currentKey==SortKey.Date ? (descending ? "upp" : "ned") : "")
+        Sortera: Datum @(currentKey == SortKey.Date ? (descending ? "upp" : "ned") : "")
     </button>
-    
-    <!--<button class="btn btn-sm" @onclick="() => SetSort(SortKey.Date)">
-        Sortera: Belopp @(currentKey==SortKey.Amount ? (descending ? "upp" : "ned") : "")
-    </button> -->
-    
-    <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Amount)"> @* ÄNDRING: knappen ska sortera på Amount (tidigare Date) *@
+    <!-- Button to sort the list by amount -->
+    <button class="btn btn-sm" @onclick="() => SetSort(SortKey.Amount)">
         Sortera: Belopp @(currentKey == SortKey.Amount ? (descending ? "upp" : "ned") : "")
     </button>
 </div>
 
-<!-- MEFETENI NAY MEMHREY U @if (!_selectedAccount.Transactions.Any())
+<!--Displays a table of all transactions for the selected account, or a message if there are none  -->
+@if (!(_selectedAccount?.Transactions?.Any() ?? false)) 
 {
-    <p>Inga Transaktioner ännu.</p>
-} -->
-
-
-@if (!(_selectedAccount?.Transactions?.Any() ?? false)) @* ÄNDRING: null-säkert check *@
-{
-    <p>Inga transaktioner ännu.</p> @* ÄNDRING: liten språkrättning *@
+    <p>Inga transaktioner ännu.</p> 
 }
 else
 {
@@ -65,6 +62,7 @@ else
             <th>Transaktionstyp</th>
             <th>Saldo efter</th>
             <th>Från - Till</th>
+            <th></th> <!-- Delete column -->
         </tr>
         </thead>
         <tbody>
@@ -76,20 +74,27 @@ else
                 <td>@transcaction.Amount</td>
                 <td>@transcaction.TransactionType</td>
                 <td>@transcaction.BalanceAfter</td>
+                
                 <td>
                     
-            @if (transcaction.FromAccountId.HasValue || transcaction.ToAccountId.HasValue)
+                    @if (transcaction.FromAccountId.HasValue || transcaction.ToAccountId.HasValue)
                
-            {
-                <span>
-                    @(transcaction.FromAccountId?.ToString().Substring(0,6) ?? "" ?? "")
+                    {
+                        <span>
+                            @(transcaction.FromAccountId?.ToString().Substring(0,6) ?? "" ?? "")
                     
-                    @(transcaction.FromAccountId.HasValue && transcaction.ToAccountId.HasValue ? " -> " : "")
-                    @(transcaction.ToAccountId?.ToString().Substring(0,6) ?? "" ?? "")
-                </span>
-            }
-            </td>
-            </tr>
+                            @(transcaction.FromAccountId.HasValue && transcaction.ToAccountId.HasValue ? " -> " : "")
+                            @(transcaction.ToAccountId?.ToString().Substring(0,6) ?? "" ?? "")
+                        </span>
+                    }
+                </td>
+                
+                
+                <td>
+                    <button class="btn btn-danger btn-sm"
+                            @onclick="() => DeleteTransactionAsync(transcaction)">Ta bort</button> @* ÄNDRING *@
+                </td>
+        </tr>
 
 
 
@@ -105,7 +110,9 @@ else
 
 
 @code {
-    
+    /// <summary>
+    /// Stores the list of accounts, the currently selected account and its ID, and the current sorting settings (key and order).
+    /// </summary>
     private List<IBankAccount> _accounts = new();
     private IBankAccount? _selectedAccount;
     private Guid _selectedAccountId;
@@ -113,15 +120,19 @@ else
     private SortKey currentKey = SortKey.Date;
     private bool descending = true;
     
-    //sorteringstyper
+    /// <summary>
+    /// Available sort keys for the table.
+    /// </summary>
     private enum SortKey
-    {
+    { 
         Date,
         Amount
     }
-
+    /// <summary>
+    /// Toggle or set sorting by the given key.
+    /// </summary>
     private void SetSort(SortKey sortKey)
-    {
+    { 
         if (currentKey == sortKey)
         {
             descending = !descending;
@@ -132,58 +143,46 @@ else
             descending = true;
         }
     }
-    
+  
+    /// <summary>
+    /// The ID of the chosen account. 
+    /// When it changes, the selected account is updated.
+    /// </summary>
     public Guid SelectedAccountId
     {
         get => _selectedAccountId;
         set
-        {
+        { 
             if(_selectedAccountId == value)
                 return;
             _selectedAccountId = value;
             _selectedAccount = _accounts.FirstOrDefault(account => account.Id == value);
         }
     }
-    /*
-    protected override void OnInitializedAsync()
-    {
-        _accounts = Accountservices.GetAccounts();
-        //om det finns konto i vår lista välj första för att visa UI
-        if (_accounts.Count > 0)
-        {
-            _selectedAccountId = _accounts[0].Id;
-            _selectedAccount = _accounts[0];
-        }
-    }  */  
 
+    /// <summary>
+    /// Load accounts and preselect the first one (if any).
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        // ÄNDRING: await + konsekvent tjänstnamn
         var accounts = await Accountservices.GetAccounts(); 
-      //!!!!!!!!!  _accounts = accounts?.ToList() ?? new List<IBankAccount>();  
       _accounts = accounts ?? new List<IBankAccount>();
-
-        
-        
-       
-    
-
-        // om det finns konto i vår lista välj första för att visa UI
+    // If there is at least one account, select the first one as the active account
         if (_accounts.Count > 0)
-        {
+        { 
             _selectedAccountId = _accounts[0].Id;
             _selectedAccount = _accounts[0];
         }
     }
    
 
-
+    /// <summary>
+    /// Return transactions sorted by the chosen key and order.
+    /// </summary>
     private IEnumerable<Transaction> SortedTransactions()
     {
         if (_selectedAccount == null)
             return Enumerable.Empty<Transaction>();
-        
-        //sortera listan, datum oh belopp
         var sortedList = _selectedAccount.Transactions.AsEnumerable();
         sortedList = currentKey switch
         {
@@ -196,4 +195,18 @@ else
         };
         return sortedList;
     }
+    
+    /// <summary>
+    /// Delete a transaction and refresh the UI.
+    /// </summary>
+    private async Task DeleteTransactionAsync(Transaction transaction)
+    { 
+        if (_selectedAccount is null) return;
+        await Accountservices.DeleteTransactionAsync(_selectedAccount.Id, transaction.Id); 
+        _accounts = await Accountservices.GetAccounts();
+        _selectedAccount = _accounts.FirstOrDefault(a => a.Id == _selectedAccountId);
+        StateHasChanged(); 
+    }
+
+   
 }

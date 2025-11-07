@@ -1,0 +1,84 @@
+﻿@page "/"
+@using CashApp.Layout
+@layout NoNavLayout
+@inject CashApp.Interface.IAccountServices AccountService
+@inject NavigationManager Navigation
+
+<h3>Välkommen till CashApp!</h3>
+<br/>
+<!--Displays a small input box where the user enters a numeric login code (digits only) -->
+<div class="form-group" id="codeInputContainer" style="max-width: 200px;">
+    <label for="inputCode" class="form-label">Ange kod för att logga in:</label>
+    <InputText id="inputCode"
+               class="form-control"
+               @bind-Value="userCode"
+               type="password"
+               inputmode="numeric"
+               pattern="[0-9]*"
+               @oninput="OnlyDigits" />
+</div>
+<!-- If the userCode is not empty and contains only digits, show the "Logga in" (Login) button -->
+@if (!string.IsNullOrEmpty(userCode) && IsDigitsOnly(userCode))
+{
+    <button class="btn btn-primary mt-2" @onclick="HandleLogin">Logga in</button>
+}
+<!-- If there is a message (for example, an error message), show it below in red text -->
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="text-danger mt-2">@message</div>
+}
+
+@code {
+    private string userCode = string.Empty;
+    private string message = string.Empty;
+
+    /// <summary>
+    ///  Keeps only numeric digits (0–9) in the user's input and removes all other characters.
+    /// </summary>
+    /// <param name="e"></param>
+    private void OnlyDigits(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString() ?? string.Empty;
+        var sb = new System.Text.StringBuilder(value.Length);
+        foreach (var ch in value)
+        {
+            if (char.IsDigit(ch)) sb.Append(ch);
+        }
+
+        userCode = sb.ToString();
+    }
+/// <summary>
+///  Checks if a string contains only numeric digits (0–9) and returns true if it does.
+/// </summary>
+/// <param name="str"></param>
+/// <returns></returns>
+    private bool IsDigitsOnly(string str)
+    {
+        if (string.IsNullOrEmpty(str)) return false;
+        foreach (var ch in str)
+        {
+            if (!char.IsDigit(ch)) return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    ///  Handles the login process: validates the entered PIN code and navigates to the home page if it’s correct.
+    /// </summary>
+    private async Task HandleLogin()
+    {
+        message = string.Empty;
+        var ok = await AccountService.ValidatePinAsync(userCode);
+        if (ok)
+        {
+            Navigation.NavigateTo("/home", forceLoad: false, replace: true);
+        }
+        else
+        {
+            message = "Fel kod. Försök igen.";
+            userCode = string.Empty;
+        }
+    }
+
+}

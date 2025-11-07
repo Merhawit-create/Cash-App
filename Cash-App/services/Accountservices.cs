@@ -12,95 +12,59 @@ using System.Threading.Tasks;
 
 namespace CashApp.services
 {
-    /* public class Accountservices : IAccountServices
-
-     {
-         public IBankAccount CreateAccount(string name, string currency, decimal initialBalance)
-         {
-             throw new NotImplementedException();
-         }
-
-         public List<IBankAccount> GetAccounts()
-         {
-             throw new NotImplementedException();
-         }
-     }
- }
-    */
-
+    /// <summary>
+    /// This service manages accounts, money actions, and saving to local storage.
+    /// </summary>
     public partial class Accountservices : IAccountServices 
     {
         private const string StorageKey = "bankapp_accounts";
-        //private readonly List<IBankAccount> _accounts= new ();
         private readonly List<Bankacount> _accounts = new();
         private readonly IStorageService _storageService;
-        private bool isLoaded;
-
-
-
+        private bool isLoaded; 
         public Accountservices(IStorageService storageService) => _storageService = storageService;
         
-
+        /// <summary>
+        /// Load accounts from storage once.
+        /// </summary>
         private async Task IsInitialized()
-        {
-
+        { 
             if (isLoaded)
             {
                 return;
-
             }
             var fromStorage = await _storageService.GetItemAsync<List<Bankacount>>(StorageKey);
             _accounts.Clear();
             if (fromStorage is { Count: > 0 }) 
                 _accounts.AddRange(fromStorage);
-                isLoaded = true;
-            
+            isLoaded = true;
         }
-            
-
-        private  Task saveAsync()=> _storageService.SetItemAsync(StorageKey, _accounts);
-
-
-
-
-
-
-
-
-
-        public async Task<IBankAccount> CreateAccount(string name, AccountType accountType, string currency, decimal initialBalance)
-        {    
+        /// <summary>
+        /// Save accounts to storage.
+        /// </summary>
+        public Task SaveAsync()=> _storageService.SetItemAsync(StorageKey, _accounts);
+        
+        /// <summary>
+        /// Make a new account and save it.
+        /// </summary>
+        public async Task<IBankAccount> CreateAccount(string name, AccountType accountType, string currency, decimal initialBalance,decimal? interestRate)
+        { 
             await IsInitialized();
-
-            var account = new Bankacount(name, accountType, currency, initialBalance);
+            var account = new Bankacount(name, accountType, currency, initialBalance,interestRate);
             _accounts.Add(account);
-
-            await saveAsync();
+            await SaveAsync();
             return account;
         }
-
+        /// <summary>
+        /// Get all accounts.
+        /// </summary>
         public async Task<List<IBankAccount>> GetAccounts()
         { 
             await IsInitialized();
-           // return _accounts.ToList();
-            //  return _accounts<IBankAccount>().ToList();
-            //return new List<IBankAccount>(_accounts);
             return _accounts.Cast<IBankAccount>().ToList();
-        }
-
-
-
-
-     /* !!!!!!!!!!!   public void Transfer(Guid fromAccountId, Guid toAccountId, decimal amount)
-        {
-           var fromAccount = _accounts.OfType<Bankacount>().FirstOrDefault(x =>x.Id == fromAccountId)
-            ?? throw new KeyNotFoundException("Account with ID {fromAccountId} not found");
-            var  toAccount =_accounts.OfType<Bankacount>().FirstOrDefault(y =>y.Id == toAccountId)
-                 ?? throw new KeyNotFoundException("Account with ID {toAccountId} not found"); 
-            fromAccount.TransferTo(toAccount, amount);
-        }*/
-     
-     
+        } 
+        /// <summary>
+        /// Move money from one account to another.
+        //// </summary>
      public async Task Transfer(Guid fromAccountId, Guid toAccountId, decimal amount) // <-- async Task
      {
          await IsInitialized();
@@ -113,73 +77,96 @@ namespace CashApp.services
 
          fromAccount.TransferTo(toAccount, amount);
 
-         await saveAsync(); // <-- VIKTIGT: spara transaktionerna
-     }
-
-
-
-
-
-
-
-
+         await SaveAsync(); 
+     } 
+        /// <summary>
+       /// Add money to an account.
+       /// </summary>
         public async Task DepositAsync(Guid accountId, decimal amount, string? description = null)
         {
             await IsInitialized();
-
             if (amount <= 0)
                 throw new ArgumentException("Belopp måste vara positivt.", nameof(amount));
-
             var acc = _accounts.FirstOrDefault(a => a.Id == accountId)
-                ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
-
+                      ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
             acc.Deposit(amount);
-            await saveAsync();
+            await SaveAsync();
         }
+     
+        /// <summary>
+        /// Take money from an account.
+        /// </summary>
         public async Task WithdrawAsync(Guid accountId, decimal amount, string? description = null)
         {
             await IsInitialized();
-
             if (amount <= 0)
                 throw new ArgumentException("Belopp måste vara positivt.", nameof(amount));
-
             var acc = _accounts.FirstOrDefault(a => a.Id == accountId)
-                ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
-
+                      ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
             acc.Withdraw(amount);
-            await saveAsync();
+            await SaveAsync();
         }
 
-
-
-
-
-
+        /// <summary>
+        /// Move money from one account to another with a note.
+        /// </summary>
         public async Task TransferAsync(Guid fromAccountId, Guid toAccountId, decimal amount, string? description = null)
         {
             await IsInitialized();
-
             if (fromAccountId == toAccountId)
                 throw new ArgumentException("Välj två olika konton.");
-
             if (amount <= 0)
                 throw new ArgumentException("Belopp måste vara positivt.", nameof(amount));
-
             var fromAccount = _accounts.FirstOrDefault(x => x.Id == fromAccountId)
-                ?? throw new KeyNotFoundException($"Account with ID {fromAccountId} not found");
-
+                              ?? throw new KeyNotFoundException($"Account with ID {fromAccountId} not found");
             var toAccount = _accounts.FirstOrDefault(y => y.Id == toAccountId)
-                ?? throw new KeyNotFoundException($"Account with ID {toAccountId} not found");
+                            ?? throw new KeyNotFoundException($"Account with ID {toAccountId} not found");
 
-            // Utför överföringen med befintliga metoder (validerar även saldo)
-            fromAccount.TransferTo(toAccount, amount);
-
-            await saveAsync();
+            // Move the money from the sender account to the receiver account
+            fromAccount.TransferTo(toAccount, amount); 
+            await SaveAsync();
         }
-
-        public Task<IEnumerable<IBankAccount>> GetAccountsAsync()
+        /// <summary>
+        /// Delete a transaction from one account.
+        /// </summary>
+        public async Task DeleteTransactionAsync(Guid accountId, Guid transactionId)
         {
-            throw new NotImplementedException();
+            await IsInitialized();
+            var acc = _accounts.FirstOrDefault(a => a.Id == accountId)
+                      ?? throw new KeyNotFoundException($"Account with ID {accountId} not found");
+
+            // Check if 'acc' is a Bankacount object and, if it is, create a variable 'bankAcc' that refers to it
+            if (acc is Bankacount bankAcc)
+            { 
+                var removed = bankAcc.RemoveTransaction(transactionId);
+                if (!removed) throw new KeyNotFoundException($"Transaction {transactionId} not found");
+                await SaveAsync();
+            }
+            else
+            { 
+                throw new InvalidOperationException("Unexpected account type.");
+            }
         }
+      // The correct PIN code used for login (for testing or demo purposes)
+        private const string CorrectPin = "12345";
+        
+        /// <summary>
+        /// Checks if the entered PIN matches the correct one and returns true or false.
+        /// </summary>
+        /// <param name="pin"></param>
+        /// <returns></returns>
+        public Task<bool> ValidatePinAsync(string pin)
+            => Task.FromResult(pin == CorrectPin);
+        /// <summary>
+        /// Applies interest to all accounts in the _accounts list.
+        /// </summary>
+        public void ApplyInterestToAll()
+        {
+            foreach (var account in _accounts)
+            {
+                account.ApplyInterest();
+            }
+        }
+
     }
 }

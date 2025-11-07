@@ -1,54 +1,66 @@
 ﻿
-
+@*
+/// <summary>
+/// Page to create a new bank account and list all existing accounts.
+/// Users can enter name, type, currency, and initial balance.
+/// After creating, the account list refreshes.
+/// </summary>
+*@
 
 @page "/CreateAccount"
 @using CashApp.domen.Account
 @using CashApp.services
 @using System.ComponentModel.DataAnnotations
-@inject IAccountServices AccountServices
+@inject IAccountServices Accountservices
 
 <EditForm Model="_model" OnValidSubmit="CreateAccountAsync">
-    <h3>Create Account</h3>
+    <h3>Skapa konto</h3>
 
     <DataAnnotationsValidator />
     <ValidationSummary />
-
+    <!-- This div is for the account name input -->
     <div>
-        <label>Account Name</label>
+        <label>Kontonamn</label>
         <InputText @bind-Value="_model.Name" />
     </div>
-
+    <!-- This div is for selecting the account type -->
     <div>
-        <label>Account Type</label>
+        <label>Kontotyp</label>
         <InputSelect @bind-Value="_model.AccountType" class="form-select">
             <option value="0">Savings</option>
             <option value="1">Deposit</option>
         </InputSelect>
     </div>
-
+    <!-- This div is for the currency input -->
     <div>
-        <label>Currency</label>
+        <label>Valuta</label>
         <InputText @bind-Value="_model.Currency" />
     </div>
-
+    <!-- This div is for the initial balance input -->
     <div>
-        <label>Balance</label>
+        <label>Saldo</label>
         <InputNumber @bind-Value="_model.InitialBalance" />
     </div>
 
-
-
-
+    <!--  Shows the interest rate input field only when the selected account type is Savings -->
+    @if (_model.AccountType  == AccountType.Savings)
+    {
+        <div class="mb-2">
+            <label for="interestInput">Ränta (%)</label>
+            <InputNumber id="interestInput" class="form-control" @bind-Value="_model.InterestRate" />
+            <ValidationMessage For="@(() => _model.InterestRate)" />
+        </div>
+    }
 
     
 
-    <button type="submit">Create</button>
+    <button type="submit">Skapa</button>
 </EditForm>
 
 <hr />
 
-<h4>Accounts</h4>
-
+<h4>Konton</h4>
+<!-- Displays a table of all existing accounts, or a message if no accounts have been created  -->
 @if (accounts is null || !accounts.Any())
 {
     <p>No accounts created yet.</p>
@@ -58,10 +70,13 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Currency</th>
-                <th>Balance</th>
+                <th>Namn</th>
+                <th>Typ</th>
+                <th>Valuta</th>
+                <th>Saldo</th>
+                <th>Ränta</th>
+                <th>Åtgärder</th> 
+
             </tr>
         </thead>
         <tbody>
@@ -72,6 +87,19 @@ else
                     <td>@acc.AccountType</td>
                     <td>@acc.Currency</td>
                     <td>@acc.Balance</td>
+                    <td>
+                        @(acc.InterestRate.HasValue ? (acc.InterestRate.Value * 100).ToString("N2") + " %" : "-")
+                    </td>
+                    <td>
+                        @if (acc.AccountType == AccountType.Savings && acc.InterestRate.HasValue)
+                        {
+                            <button class="btn btn-sm btn-success" @onclick="() => ApplyInterestAsync(acc)">
+                                Tillämpa ränta
+                            </button>
+                        }
+                    </td>
+
+
                 </tr>
             }
         </tbody>
@@ -84,52 +112,63 @@ else
     private createAccountModel _model = new();
     private List<IBankAccount>? accounts =new();
 
+    /// <summary>
+    /// Loads the accounts when the page starts.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        accounts = await AccountServices.GetAccounts();
+        accounts = await Accountservices.GetAccounts();
     }
-
+    /// <summary>
+    /// Creates a new account and refreshes the account list.
+    /// </summary>
     private async Task CreateAccountAsync(){ 
         try
-          {
-            //AccountServices.CreateAccount(_model.Name!, _model.AccountType, _model.Currency!, _model.InitialBalance);
-            var account = await AccountServices.CreateAccount(
+          {  
+              if (_model.AccountType  == AccountType.Savings && _model.InterestRate.HasValue)
+              {
+                  _model.InterestRate /= 100m;
+              }
+            var account = await Accountservices.CreateAccount(
            _model.Name!,
            _model.AccountType,
            _model.Currency!,
-           _model.InitialBalance
-       );
-
+           _model.InitialBalance,
+           _model.InterestRate
           
-           
-
-
-
-
-
-        accounts = await AccountServices.GetAccounts();
+       );
+       
+        accounts = await Accountservices.GetAccounts();
         _model.Clear();
         StateHasChanged();
     }
-
-
-
-        catch (Exception exception)
+    catch (Exception exception)
         {
             Console.WriteLine(exception);
         }
-
-
+    }
+/// <summary>
+/// Applies interest to the selected account, saves the changes, and refreshes the account list.
+/// </summary>
+/// <param name="acco"></param>
+    private async Task ApplyInterestAsync(IBankAccount acco)
+    {
+        try
+        {
+            acco.ApplyInterest(); // 🪄 lägg till räntan
+            await Accountservices.SaveAsync(); // om du sparar till fil
+            accounts = await Accountservices.GetAccounts(); // uppdatera listan
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fel vid ränteberäkning: {ex.Message}");
+        }
     }
 
-
-
-
-
-
-
-
-
+/// <summary>
+/// Represents the data model used for creating a new bank account, including name, type, currency, balance, and interest rate.
+/// </summary>
     public class createAccountModel
     {
         [Required(ErrorMessage = "Name is required.")]
@@ -142,26 +181,22 @@ else
 
         [Range(0, double.MaxValue, ErrorMessage = "Balance cannot be negative.")]
         public decimal InitialBalance { get; set; } = 0;
+        public decimal? InterestRate { get; set; }
 
-
-
-
-      
-
-
+        /// <summary>
+        /// Clears the form fields to default values.
+        /// </summary>
         public void Clear()
         {
             Name = string.Empty;
             AccountType = AccountType.Deposit;
             Currency = string.Empty;
-            InitialBalance = 0;
-           
-        }
+            InitialBalance = 0; 
+            InterestRate = null; 
+        } 
+      
 
     }
-
-
-
-    
+  
 }
    
