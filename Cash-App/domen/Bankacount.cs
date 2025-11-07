@@ -134,7 +134,7 @@ public class Bankacount : IBankAccount
 
         _transactions.Add(new Transaction
         {    
-            TransactionType = TransactionType.TransferOut,
+            TransactionType = TransactionType.TransferOut,  
             Amount = amount,
             BalanceAfter = Balance,
            

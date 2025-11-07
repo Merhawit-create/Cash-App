@@ -23,10 +23,11 @@
     /// </summary>
     public enum TransactionType
     {
-        Deposit,
+       Deposit,
         Withdraw,
         TransferIn,
         TransferOut 
+       
     }
 
 }

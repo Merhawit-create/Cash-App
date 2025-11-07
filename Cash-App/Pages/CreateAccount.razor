@@ -19,36 +19,41 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
     <!-- This div is for the account name input -->
-    <div>
-        <label>Kontonamn</label>
+    <div  class="mb-3"  style="display: flex; align-items: center; gap: 25px;">
+         <label style="display:inline-block; width:100px;"> Kontonamn</label>   
         <InputText @bind-Value="_model.Name" />
     </div>
     <!-- This div is for selecting the account type -->
-    <div>
-        <label>Kontotyp</label>
-        <InputSelect @bind-Value="_model.AccountType" class="form-select">
+   
+    <div  class=" mb-3"  style="display: flex; align-items: center; gap: 25px;"> 
+        <label style="display:inline-block; width:100px;">KontoTyp</label>
+        <InputSelect @bind-Value="_model.AccountType"
+                     class="form-control form-control-sm"
+                     style="width: 210px;">
             <option value="0">Savings</option>
             <option value="1">Deposit</option>
         </InputSelect>
     </div>
     <!-- This div is for the currency input -->
-    <div>
-        <label>Valuta</label>
+    <div  class=" mb-3"  style="display: flex; align-items: center; gap: 25px;">
+        <label style="display:inline-block; width:100px;"> Valuta</label>
         <InputText @bind-Value="_model.Currency" />
     </div>
     <!-- This div is for the initial balance input -->
-    <div>
-        <label>Saldo</label>
+    <div class="mb-3" style="display: flex; align-items: center; gap: 25px;">
+        <label style="display:inline-block; width:100px;">Saldo</label>
         <InputNumber @bind-Value="_model.InitialBalance" />
     </div>
 
     <!--  Shows the interest rate input field only when the selected account type is Savings -->
     @if (_model.AccountType  == AccountType.Savings)
     {
-        <div class="mb-2">
-            <label for="interestInput">Ränta (%)</label>
-            <InputNumber id="interestInput" class="form-control" @bind-Value="_model.InterestRate" />
-            <ValidationMessage For="@(() => _model.InterestRate)" />
+        
+        <div  class=" mb-3"  style="display: flex; align-items: center; gap: 25px;">
+           <!-- <label for="interestInput">Ränta (%)</label> -->
+            <label for="interestInput"  style="display:inline-block; width:100px;">Ränta (%)</label>
+            <InputNumber id="interestInput" class="form-control  form-control-sm"   style="width: 100px;"@bind-Value=" _model.InterestRate"/>
+            <ValidationMessage For="@(() => _model.InterestRate)"/>
         </div>
     }
 
